@@ -9,6 +9,8 @@ from streamlit import runtime
 from streamlit.web import cli as stcli
 from pdf2image import convert_from_path
 
+from ConsignmentItemizedData import CID
+
 st.set_page_config(layout="wide")
 pd.set_option('display.max_columns', None)
 
@@ -63,6 +65,8 @@ class App:
 
             # Cleanup: Remove the temporary PDF file
             os.remove(pdf_path)
+
+            cid = CID(selected_images)
 
     '''
     Set the title and page configuration for wider layout
