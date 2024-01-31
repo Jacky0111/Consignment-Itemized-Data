@@ -6,8 +6,8 @@ import shutil
 from datetime import datetime
 from paddleocr import PaddleOCR
 
-from Detect import Detect
-from OpticalCharacterRecognition import OCR
+# from Detect import Detect
+# from OpticalCharacterRecognition import OCR
 
 
 class CID:
@@ -15,6 +15,9 @@ class CID:
         for img in images:
             paddle = PaddleOCR(use_angle_cls=True, lang='en')
             result = paddle.ocr(img, cls=True)
-            print(result)
-            print()
+            print('ssssssssssssssssssssssssssssssssssssssssss')
+            # for idx in range(len(result)):
+            #     res = result[idx]
+            #     for line in res:
+            #         print(line)
 
