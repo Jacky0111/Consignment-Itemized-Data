@@ -1,0 +1,5 @@
+numpy~=1.26.3
+pandas~=2.2.0
+pillow~=10.2.0
+streamlit~=1.30.0
+pdf2image~=1.17.0
