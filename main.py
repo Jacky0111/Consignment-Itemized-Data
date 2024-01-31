@@ -1,21 +1,71 @@
-# importing everything from tkinter
-from tkinter import *
-# importing ttk for styling widgets from tkinter
-from tkinter import ttk
-# importing filedialog from tkinter
-from tkinter import filedialog as fd
-# importing os module
+import streamlit as st
+from pdf2image import convert_from_path
+from PIL import Image
 import os
+import io
 
-# creating a class called PDFViewer
-class PDFViewer:
-    # initializing the __init__ / special method
-    def __init__(self, master):
-        pass
+def pdf_to_images(pdf_path):
+    # Convert PDF to images using pdf2image
+    images = convert_from_path(pdf_path)
+    return images
 
-# creating the root window using Tk() class
-root = Tk()
-# instantiating/creating object app for class PDFViewer
-app = PDFViewer(root)
-# calling the mainloop to run the app infinitely until user closes it
-root.mainloop()
+def remove_unselected_images(output_folder, selected_pages):
+    # Remove unselected pages
+    for i in range(1, len(selected_pages) + 1):
+        image_path = os.path.join(output_folder, f"output_image-{i}.png")
+        if i not in selected_pages and os.path.exists(image_path):
+            os.remove(image_path)
+
+def main():
+    st.title("PDF Viewer with Streamlit")
+
+    # Allow user to select a PDF file
+    uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
+
+    if uploaded_file is not None:
+        # Save the uploaded PDF file to a temporary location
+        pdf_path = "temp.pdf"
+        with open(pdf_path, "wb") as f:
+            f.write(uploaded_file.read())
+
+        # Convert PDF to images using pdf2image
+        images = pdf_to_images(pdf_path)
+
+        # Display selected images in the Streamlit app
+        selected_pages = st.multiselect("Select pages to keep", [i+1 for i in range(len(images))], default=[i+1 for i in range(len(images))])
+
+        print('wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww')
+        # Mark selected pages in the backend
+        print("Selected pages:", selected_pages)
+
+        # Remove unselected pages
+        remove_unselected_images("output_images", selected_pages)
+
+        # Display selected images
+        selected_images = [images[i-1] for i in selected_pages]
+        print(f'selected_images: {selected_images}')
+        # st.image(selected_images, caption=[f"Page {i}" for i in selected_pages], use_column_width=True)
+
+        # Create placeholder for dynamic update
+        image_placeholder = st.empty()
+
+        # Display selected images in rows and columns dynamically
+        num_columns = 2
+        for i in range(0, len(selected_images), num_columns):
+            row = st.columns(num_columns)
+            for j in range(num_columns):
+                index = i + j
+                if index < len(selected_images):
+                    si = selected_images[index]
+                    # row[j].image(si, caption=[f"Page {i}" for i in selected_pages])
+                    # page_number = index + 1
+                    print(f'i: {i}')
+                    print(f'j: {j}')
+
+                    row[j].image(si, caption=f"Page {selected_pages}")
+
+        # Cleanup: Remove the temporary PDF file
+        os.remove(pdf_path)
+
+if __name__ == "__main__":
+    main()
