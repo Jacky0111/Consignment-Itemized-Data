@@ -66,7 +66,8 @@ class App:
             # Cleanup: Remove the temporary PDF file
             os.remove(pdf_path)
 
-            cid = CID(selected_images)
+            for img in selected_images:
+                cid = CID(img)
 
     '''
     Set the title and page configuration for wider layout
