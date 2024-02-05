@@ -2,6 +2,8 @@ import os
 import sys
 import pandas as pd
 from PIL import Image
+from pathlib import Path
+
 import streamlit as st
 from streamlit import runtime
 from streamlit.web import cli as stcli
@@ -14,27 +16,46 @@ pd.set_option('display.max_columns', None)
 
 
 class App:
-    uploaded_file = None
+    pdf_path = None
+    uploaded_files = None
 
     def __init__(self):
         App.header()
         self.uploadFile()
 
     def runner(self):
-        if self.uploaded_file is not None:
-            # Save the uploaded PDF file to a temporary location
-            pdf_path = "temp.pdf"
-            with open(pdf_path, "wb") as f:
-                f.write(self.uploaded_file.read())
+        if hasattr(self, 'uploaded_files') and self.uploaded_files:
+            for file in self.uploaded_files:
+                # Save the uploaded PDF file to a temporary location
+                self.pdf_path = f'data/temp/{file.name}'
 
-            # Convert PDF to images using pdf2image
-            images = self.pdf_to_images(pdf_path)
-
+                try:
+                    with open(self.pdf_path, "wb") as f:
+                        f.write(file.read())
+                    st.write('Reading')
+                except (FileNotFoundError, FileExistsError):
+                    os.makedirs('data/temp/', exist_ok=True)
 
             # Cleanup: Remove the temporary PDF file
-            os.remove(pdf_path)
+            # os.remove(self.pdf_path)
 
-            # for img in selected_images:
+            #     # Convert PDF to images using pdf2image
+            #     images = self.pdf_to_images(pdf_path)
+            #
+            #     # Cleanup: Remove the temporary PDF file
+            #     os.remove(pdf_path)
+            #
+            # pdf_path = "temp.pdf"
+            # with open(pdf_path, "wb") as f:
+            #     f.write(self.uploaded_file.read())
+
+            # Convert PDF to images using pdf2image
+            # images = self.pdf_to_images(pdf_path)
+            #
+            # # Cleanup: Remove the temporary PDF file
+            # os.remove(pdf_path)
+            #
+            # # for img in selected_images:
             #     cid = CID(img)
 
     '''
@@ -42,14 +63,14 @@ class App:
     '''
     @staticmethod
     def header():
-        st.write('# PDF Viewer with Streamlit')
+        st.write('# Consignment Itemized Data')
 
     '''
     Upload pdf file
     '''
     def uploadFile(self):
-        self.uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
-        print(f'self.uploaded_file: {self.uploaded_file}')
+        self.uploaded_files = st.file_uploader("Upload PDF files", type="pdf", accept_multiple_files=True)
+        print(f'self.uploaded_files: {self.uploaded_files}')
 
     '''
     Convert PDF to images using pdf2image
@@ -58,7 +79,7 @@ class App:
     def pdf_to_images(pdf_path):
         images = convert_from_path(pdf_path)
         return images
-    
+
 
 if __name__ == '__main__':
     if runtime.exists():
