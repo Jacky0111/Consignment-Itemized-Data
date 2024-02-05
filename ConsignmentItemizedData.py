@@ -31,6 +31,7 @@ class CID:
     '--oem 3' uses default LSTM OCR engine mode.
     '--psm 4' represents the Page Segmentation Mode and 4 assumes a single column of text.
     '''
+
     def identifyHospital(self, raw_text):
         pass
         text = pytesseract.image_to_string(img, config=r'--oem 3 --psm 4 -l eng')
@@ -62,8 +63,6 @@ class CID:
             print(f'{directory} has been made')
         except FileExistsError:
             pass
-
-
 
     # for img in images:
     #     text = pytesseract.image_to_string(img, config=r'--oem 3 --psm 4 -l eng')
