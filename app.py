@@ -16,7 +16,6 @@ pd.set_option('display.max_columns', None)
 
 
 class App:
-    pdf_path = None
     uploaded_files = None
 
     def __init__(self):
@@ -27,27 +26,15 @@ class App:
         if hasattr(self, 'uploaded_files') and self.uploaded_files:
             for file in self.uploaded_files:
                 # Save the uploaded PDF file to a temporary location
-                self.pdf_path = f'data/temp/{file.name}'
+                pdf_path = f'data/temp/{file.name}'
 
                 try:
-                    with open(self.pdf_path, "wb") as f:
+                    with open(pdf_path, "wb") as f:
                         f.write(file.read())
-                    st.write('Reading')
+                    st.success(f"File '{file.name}' has been successfully uploaded.")
+
                 except (FileNotFoundError, FileExistsError):
                     os.makedirs('data/temp/', exist_ok=True)
-
-            # Cleanup: Remove the temporary PDF file
-            # os.remove(self.pdf_path)
-
-            #     # Convert PDF to images using pdf2image
-            #     images = self.pdf_to_images(pdf_path)
-            #
-            #     # Cleanup: Remove the temporary PDF file
-            #     os.remove(pdf_path)
-            #
-            # pdf_path = "temp.pdf"
-            # with open(pdf_path, "wb") as f:
-            #     f.write(self.uploaded_file.read())
 
             # Convert PDF to images using pdf2image
             # images = self.pdf_to_images(pdf_path)
