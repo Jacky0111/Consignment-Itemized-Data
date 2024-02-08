@@ -64,23 +64,28 @@ class CID:
         except FileExistsError:
             pass
 
+    '''
+    Process the selected files by copying them to the specified destination folder.
+    @param files: a list of strings representing the paths of the files to be processed.
+    @param destination: a string representing the path of the destination folder.
+    '''
+    @staticmethod
+    def processSelectedFiles(files, destination):
+        # Remove existing files in the destination folder
+        for existing_file in os.listdir(destination):
+            file_path = os.path.join(destination, existing_file)
+            if os.path.isfile(file_path):
+                os.remove(file_path)  # Remove the existing file
+
+        # Copy the selected files to the destination folder
+        for path in files:
+            shutil.copy(path, destination)  # Copy the file to the destination folder
+
     # for img in images:
     #     text = pytesseract.image_to_string(img, config=r'--oem 3 --psm 4 -l eng')
     #     print(text)
     #     print('')
     #
-    # paddle = PaddleOCR(use_angle_cls=True, lang='en')
-    # result = paddle.ocr(np.array(img), cls=True)
-    # # Extract information from the result
-    # text = ''
-    # for line in result:
-    #     if line is None:
-    #         continue
-    #     else:
-    #         for word_info in line:
-    #             text += word_info[1][0] + ' '
-    #
-    # print(f'text: /n{text}')
 
 
 if __name__ == '__main__':
