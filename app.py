@@ -14,27 +14,71 @@ from ConsignmentItemizedData import CID
 st.set_page_config(layout="wide")
 pd.set_option('display.max_columns', None)
 
+
 class App:
+    pdf_files = None
     uploaded_files = None
+    previous_files = None
 
     def __init__(self):
-        pass
+        self.header()
+        self.uploadFile()
+        self.processor()
 
     '''
     Set the title and page configuration for wider layout
     '''
+
     def header(self):
         st.write('# Consignment Itemized Data')
 
     '''
     Upload pdf file
     '''
+
     def uploadFile(self):
-        pass
+        current_file_len = 0
+        previous_file_len = current_file_len if current_file_len != 0 else 0
 
+        self.uploaded_files = st.file_uploader("Upload PDF files", type="pdf", accept_multiple_files=True)
+        self.pdf_files = [f.name for f in self.uploaded_files]
 
+        print(f'self.uploaded_files: {self.uploaded_files}/n/n {len(self.uploaded_files)}')
 
-    
+        current_file_len = len(self.uploaded_files)
+
+        balance = current_file_len - previous_file_len
+        if balance > 0:
+            removed_list =
+            extra_files_set = uploaded_files_set ^ files_set
+
+        elif balance < 0:
+            pass
+
+        previous_file_len = current_file_len
+
+    def processor(self):
+        if hasattr(self, 'uploaded_files') and self.uploaded_files:
+            for file in self.uploaded_files:
+                # Save the uploaded PDF file to a temporary location
+                pdf_path = f'data/temp/{file.name}'
+
+                try:
+                    with open(pdf_path, "wb") as f:
+                        f.write(file.read())
+                    st.success(f"File '{file.name}' has been successfully uploaded.")
+
+                except (FileNotFoundError, FileExistsError):
+                    os.makedirs('data/temp/', exist_ok=True)
+
+    @staticmethod
+    def deleteLocalFiles(file):
+        local_path = f'data/temp/{file.name}'
+        st.write(f'local_path: {local_path}')
+        if os.path.exists(local_path):
+            os.remove(local_path)
+            st.warning(f"File '{file.name}' has been deleted from local storage.")
+
 
 if __name__ == '__main__':
     if runtime.exists():
