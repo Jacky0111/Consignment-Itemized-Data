@@ -16,9 +16,9 @@ pd.set_option('display.max_columns', None)
 
 
 class App:
-    pdf_files = None
-    uploaded_files = None
-    previous_files = None
+    pdf_files = []
+    uploaded_files = []
+    previous_files = []
 
     def __init__(self):
         self.header()
@@ -35,7 +35,6 @@ class App:
     '''
     Upload pdf file
     '''
-
     def uploadFile(self):
         current_file_len = 0
         previous_file_len = current_file_len if current_file_len != 0 else 0
@@ -43,19 +42,27 @@ class App:
         self.uploaded_files = st.file_uploader("Upload PDF files", type="pdf", accept_multiple_files=True)
         self.pdf_files = [f.name for f in self.uploaded_files]
 
-        print(f'self.uploaded_files: {self.uploaded_files}/n/n {len(self.uploaded_files)}')
+        print(f'self.pdf_files: {self.pdf_files}')
+        print(f'self.previous_files: {self.previous_files}')
 
         current_file_len = len(self.uploaded_files)
 
-        balance = current_file_len - previous_file_len
-        if balance > 0:
-            removed_list =
-            extra_files_set = uploaded_files_set ^ files_set
-
-        elif balance < 0:
-            pass
+        # balance = current_file_len - previous_file_len
+        # if balance > 0:
+        #     extra_files = set(self.uploaded_files) ^ set(self.previous_files)
+        #
+        #     # # Check for removed files
+        #     # if self.uploaded_files is not None and self.previous_files:
+        #     #     for fp in extra_files:
+        #     #         self.deleteLocalFiles(fp)
+        #
+        # elif balance < 0:
+        #     pass
 
         previous_file_len = current_file_len
+        self.previous_files = self.pdf_files
+        print(f'self.previous_files: {self.previous_files}')
+
 
     def processor(self):
         if hasattr(self, 'uploaded_files') and self.uploaded_files:
