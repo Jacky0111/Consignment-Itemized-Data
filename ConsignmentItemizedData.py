@@ -33,7 +33,11 @@ class CID:
     '''
 
     def identifyHospital(self, raw_text):
-        pass
+        hospital_dict = {
+            'KPJ': 'KPJ',
+            'GLE': 'Gleneagles',
+        }
+
         text = pytesseract.image_to_string(img, config=r'--oem 3 --psm 4 -l eng')
 
     def setFolderPath(self, hosp_code, file_name):
@@ -50,6 +54,8 @@ class CID:
         path = r'Screenshots/' + parse_url.netloc + '_' + str(datetime.now().strftime('%Y_%m_%d_%H_%M_%S')) + '/'
         self.file_name = path + parse_url.netloc
         os.makedirs(path)
+
+        path = f'data/{hosp_code}'
 
     '''
     Create a new folder if it does not already exist.
