@@ -1,16 +1,20 @@
 # Empowers the end user to make choices between performing document conversion and optical character recognition (OCR)
 
 import os
+import re
 import cv2
 import shutil
-from datetime import datetime
 import pytesseract
 import numpy as np
+from datetime import datetime
 from paddleocr import PaddleOCR
+from pdf2image import convert_from_path
 
 # from Detect import Detect
 # from OpticalCharacterRecognition import OCR
 
+poppler_path = r'C:\Program Files\poppler-23.05.0\Library\bin'
+os.environ["PATH"] += os.pathsep + poppler_path
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 
@@ -27,41 +31,16 @@ class CID:
     def runner(self):
         pass
 
-    '''
-    '--oem 3' uses default LSTM OCR engine mode.
-    '--psm 4' represents the Page Segmentation Mode and 4 assumes a single column of text.
-    '''
-
-    def identifyHospital(self, raw_text):
-        hospital_dict = {
-            'KPJ': 'KPJ',
-            'GLE': 'Gleneagles',
-        }
-
-        text = pytesseract.image_to_string(img, config=r'--oem 3 --psm 4 -l eng')
-
-    def setFolderPath(self, hosp_code, file_name):
-        path = f"output/{hosp_code}_{file_name}_{str(datetime.now().strftime('%Y_%m_%d_%H_%M_%S'))}"
-
+    @staticmethod
+    def setFolderPath(file_name):
+        path = f"output/{file_name}_{str(datetime.now().strftime('%Y_%m_%d_%H_%M_%S'))}"
         CID.createFolder(path)
-
-        self.folder_path = r'/Images/' + Path(dir).stem + '_' + str(
-            datetime.now().strftime('%Y_%m_%d_%H_%M_%S'))
-        self.folder_path = os.getcwd() + self.folder_path
-        os.makedirs(self.folder_path)
-
-        parse_url = urlparse(self.url)
-        path = r'Screenshots/' + parse_url.netloc + '_' + str(datetime.now().strftime('%Y_%m_%d_%H_%M_%S')) + '/'
-        self.file_name = path + parse_url.netloc
-        os.makedirs(path)
-
-        path = f'data/{hosp_code}'
+        return path
 
     '''
     Create a new folder if it does not already exist.
     @param directory: a string representing the path of the directory to be created.
     '''
-
     @staticmethod
     def createFolder(directory):
         try:
@@ -87,11 +66,59 @@ class CID:
         for path in files:
             shutil.copy(path, destination)  # Copy the file to the destination folder
 
-    # for img in images:
-    #     text = pytesseract.image_to_string(img, config=r'--oem 3 --psm 4 -l eng')
-    #     print(text)
-    #     print('')
-    #
+    '''
+    '--oem 3' uses default LSTM OCR engine mode.
+    '--psm 4' represents the Page Segmentation Mode and 4 assumes a single column of text.
+    '''
+    def identifyHospital(self, folder):
+        break_loop = False
+        hospital_dict = {
+            'KPJ': 'KPJ',
+            'GLE': 'Gleneagles',
+        }
+
+        # Get a list of all PNG images in the folder
+        all_images = [file for file in os.listdir(folder) if file.endswith('.png')]
+
+        # Iterate through each PNG image and perform OCR
+        for image_file in all_images:
+            image_path = os.path.join(folder, image_file)
+
+            # Read the image using OpenCV
+            img = cv2.imread(image_path)
+
+            # Perform OCR using pytesseract
+            text = pytesseract.image_to_string(img, config=r'--oem 3 --psm 4 -l eng')
+
+            for keyword, hospital_code in hospital_dict.items():
+                if re.search(keyword, all_extracted_text, re.IGNORECASE):
+                    return hospital_code
+
+        return None
+
+    @staticmethod
+    def converter(file_path):
+        # Split folder and file name
+        output_folder, file_name_with_ext = os.path.split(file_path)
+        file_name, ext = os.path.splitext(file_name_with_ext)
+
+        # Convert image
+        images = convert_from_path(file_path, dpi=300)
+
+        # Save images to pre-defined location
+        CID.saveImages(images, output_folder, file_name)
+
+    '''
+    Save converted images to the output folder.
+    @param images: A list of images to be saved.
+    @param output_folder: A string representing the path to the folder where the images will be saved.
+    @param pdf_name: A string representing the name of the original PDF file (without extension).
+    '''
+    @staticmethod
+    def saveImages(images, of, pdf_name):
+        for idx, img in enumerate(images):
+            img_path = os.path.join(of, f'{pdf_name}_page_{idx + 1}.png')
+            img.save(img_path, 'PNG')
 
 
 if __name__ == '__main__':
