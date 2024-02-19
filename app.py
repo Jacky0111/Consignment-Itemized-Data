@@ -18,8 +18,6 @@ pd.set_option('display.max_columns', None)
 
 class App:
     cid = None
-    ocr = None
-    data_path = None
 
     files_name = []
     pdf_files = []
@@ -58,7 +56,8 @@ class App:
                 st.success(f"File '{file}'.pdf has been successfully uploaded.")
 
                 self.cid.converter(pdf_path)
-                # self.cid.identifyHospital()
+
+                hosp_code = self.cid.identifyHospital(location)
 
 
     @staticmethod
