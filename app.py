@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 import pandas as pd
 from PIL import Image
 from pathlib import Path
@@ -16,11 +17,17 @@ pd.set_option('display.max_columns', None)
 
 
 class App:
+    cid = None
+    ocr = None
+    data_path = None
+
+    files_name = []
     pdf_files = []
     uploaded_files = []
     previous_files = []
 
     def __init__(self):
+        self.cid = CID()
         self.header()
         self.uploadFile()
         self.processor()
@@ -28,7 +35,6 @@ class App:
     '''
     Set the title and page configuration for wider layout
     '''
-
     def header(self):
         st.write('# Consignment Itemized Data')
 
@@ -36,47 +42,24 @@ class App:
     Upload pdf file
     '''
     def uploadFile(self):
-        current_file_len = 0
-        previous_file_len = current_file_len if current_file_len != 0 else 0
-
         self.uploaded_files = st.file_uploader("Upload PDF files", type="pdf", accept_multiple_files=True)
-        self.pdf_files = [f.name for f in self.uploaded_files]
-
-        print(f'self.pdf_files: {self.pdf_files}')
-        print(f'self.previous_files: {self.previous_files}')
-
-        current_file_len = len(self.uploaded_files)
-
-        # balance = current_file_len - previous_file_len
-        # if balance > 0:
-        #     extra_files = set(self.uploaded_files) ^ set(self.previous_files)
-        #
-        #     # # Check for removed files
-        #     # if self.uploaded_files is not None and self.previous_files:
-        #     #     for fp in extra_files:
-        #     #         self.deleteLocalFiles(fp)
-        #
-        # elif balance < 0:
-        #     pass
-
-        previous_file_len = current_file_len
-        self.previous_files = self.pdf_files
-        print(f'self.previous_files: {self.previous_files}')
-
+        self.files_name = [Path(f.name).stem for f in self.uploaded_files]
 
     def processor(self):
-        if hasattr(self, 'uploaded_files') and self.uploaded_files:
-            for file in self.uploaded_files:
-                # Save the uploaded PDF file to a temporary location
-                pdf_path = f'data/temp/{file.name}'
+        if hasattr(self, 'files_name') and self.files_name:
+            for file, up_file in zip(self.files_name, self.uploaded_files):
+                # Create a directory to store data based on name and datetime
+                location = self.cid.setFolderPath(file)
 
-                try:
-                    with open(pdf_path, "wb") as f:
-                        f.write(file.read())
-                    st.success(f"File '{file.name}' has been successfully uploaded.")
+                # Save the uploaded PDF file respective location
+                pdf_path = f'{location}/{file}.pdf'
+                with open(pdf_path, "wb") as f:
+                    f.write(up_file.read())
+                st.success(f"File '{file}'.pdf has been successfully uploaded.")
 
-                except (FileNotFoundError, FileExistsError):
-                    os.makedirs('data/temp/', exist_ok=True)
+                self.cid.converter(pdf_path)
+                # self.cid.identifyHospital()
+
 
     @staticmethod
     def deleteLocalFiles(file):
@@ -94,7 +77,7 @@ if __name__ == '__main__':
 
     else:
         # If the runtime environment doesn't exist, start the Streamlit application
-        sys.argv = ['streamlit', 'run', 'app.py']
+        sys.argv = ['streamlit', 'run', 'app.py', '--server.runOnSave=true']
         sys.exit(stcli.main())
 
 # This code checks for the presence of a specific runtime environment and launches a Streamlit application if the
