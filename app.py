@@ -8,7 +8,6 @@ from pathlib import Path
 import streamlit as st
 from streamlit import runtime
 from streamlit.web import cli as stcli
-from pdf2image import convert_from_path
 
 from ConsignmentItemizedData import CID
 
