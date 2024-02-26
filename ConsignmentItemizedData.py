@@ -66,35 +66,28 @@ class CID:
         for path in files:
             shutil.copy(path, destination)  # Copy the file to the destination folder
 
-    '''
-    '--oem 3' uses default LSTM OCR engine mode.
-    '--psm 4' represents the Page Segmentation Mode and 4 assumes a single column of text.
-    '''
     def identifyHospital(self, folder):
-        break_loop = False
-        hospital_dict = {
-            'KPJ': 'KPJ',
-            'GLE': 'Gleneagles',
-        }
 
-        # Get a list of all PNG images in the folder
-        all_images = [file for file in os.listdir(folder) if file.endswith('.png')]
 
-        # Iterate through each PNG image and perform OCR
-        for image_file in all_images:
-            image_path = os.path.join(folder, image_file)
 
-            # Read the image using OpenCV
-            img = cv2.imread(image_path)
-
-            # Perform OCR using pytesseract
-            text = pytesseract.image_to_string(img, config=r'--oem 3 --psm 4 -l eng')
-
-            for keyword, hospital_code in hospital_dict.items():
-                if re.search(keyword, all_extracted_text, re.IGNORECASE):
-                    return hospital_code
-
-        return None
+        # # Get a list of all PNG images in the folder
+        # all_images = [file for file in os.listdir(folder) if file.endswith('.png')]
+        #
+        # # Iterate through each PNG image and perform OCR
+        # for image_file in all_images:
+        #     image_path = os.path.join(folder, image_file)
+        #
+        #     # Read the image using OpenCV
+        #     img = cv2.imread(image_path)
+        #
+        #     # Perform OCR using pytesseract
+        #     text = pytesseract.image_to_string(img, config=r'--oem 3 --psm 4 -l eng')
+        #
+        #     for keyword, hospital_code in hospital_dict.items():
+        #         if re.search(keyword, all_extracted_text, re.IGNORECASE):
+        #             return hospital_code
+        #
+        # return None
 
     @staticmethod
     def converter(file_path):
