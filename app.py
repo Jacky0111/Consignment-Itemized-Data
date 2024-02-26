@@ -24,7 +24,6 @@ class App:
     previous_files = []
 
     def __init__(self):
-        self.cid = CID()
         self.header()
         self.uploadFile()
         self.processor()
@@ -45,6 +44,8 @@ class App:
     def processor(self):
         if hasattr(self, 'files_name') and self.files_name:
             for file, up_file in zip(self.files_name, self.uploaded_files):
+                self.cid = CID()
+
                 # Create a directory to store data based on name and datetime
                 location = self.cid.setFolderPath(file)
 
@@ -54,10 +55,10 @@ class App:
                     f.write(up_file.read())
                 st.success(f"File '{file}'.pdf has been successfully uploaded.")
 
+                # Convert PDF to images
                 self.cid.converter(pdf_path)
 
-                hosp_code = self.cid.identifyHospital(location)
-
+                # hosp_code = self.cid.identifyHospital(location)
 
     @staticmethod
     def deleteLocalFiles(file):
