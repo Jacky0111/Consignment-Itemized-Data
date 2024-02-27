@@ -66,7 +66,7 @@ class CID:
         for path in files:
             shutil.copy(path, destination)  # Copy the file to the destination folder
 
-    def identifyHospital(self, folder):
+    # def identifyHospital(self, folder):
 
 
 
