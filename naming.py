@@ -17,17 +17,21 @@ def removeSuffix(name_list):
 # Step 4: Filter DataFrame based on conditions
 def filterDataframe(data, name_list):
     filtered = []
-    for file_name in file_names:
+    for file_name in name_list:
         if file_name in data['ClaimNo'].values:
-            filtered.append(name_list)
+            filtered.append(file_name)
     return filtered
 
 
 # Step 5: Rename PDF files with "_KPJ" suffix
 def renameBills(location, filtered, code):
     for file_name in filtered:
-        old_path = os.path.join(location, file_name + ".pdf")
-        new_path = os.path.join(location, file_name + f'_{code}.pdf')
+        old_path = os.path.join(location, f'{file_name}.pdf')
+        new_path = os.path.join(location, f'{file_name}_{code}.pdf')
+
+        # print(f'old_path: {old_path}')
+        # print(f'new_path: {new_path}')
+
         try:
             os.rename(old_path, new_path)
         except FileNotFoundError:
@@ -41,35 +45,23 @@ def copyFileToFolder(directory_path, filtered, code):
     os.makedirs(kpj_folder, exist_ok=True)
 
     for file_name in filtered:
-        source_path = os.path.join(directory_path, file_name + f'_{code}.pdf')
-        destination_path = os.path.join(kpj_folder, file_name + f'_{code}.pdf')
+        source_path = os.path.join(directory_path, f'{file_name}_{code}.pdf')
+        destination_path = os.path.join(kpj_folder, f'{file_name}_{code}.pdf')
         shutil.copy(source_path, destination_path)
-
-
-# Step 5: Delete files that are not in the DataFrame
-def delete_files_not_in_dataframe(directory_path, name_list, filtered):
-    files_to_delete = set(name_list) - set(filtered)
-    for file_name in files_to_delete:
-        file_path = os.path.join(directory_path, file_name + ".pdf")
-        try:
-            os.remove(file_path)
-            print(f"File deleted: {file_path}")
-        except FileNotFoundError:
-            print(f"File not found: {file_path}")
 
 
 # Example usage
 if __name__ == "__main__":
     hosp_code = ['KPJ', 'GLE', 'PAN', 'ANS']
     # Provide the file path
-    path = 'D:/Bill'
-    excel_file_path = 'C:/Users/ChiaChungLim/Downloads/claim_data.xlsx'
+    path = 'C:/Bill'
+    excel_file_path = 'C:/Users/CP1/Downloads/claim_data.xlsx'
 
     # Step 1: Get the list of file names
     file_names = getFileNames(path)
 
     # Step 2: Read "KPJ" sheet from Excel file into DataFrame
-    df = pd.read_excel(excel_file_path, sheet_name=hosp_code[0])
+    df = pd.read_excel(excel_file_path, sheet_name=hosp_code[3])
 
     # Step 3: Remove "-2" suffix from file names
     file_names = removeSuffix(file_names)
@@ -78,10 +70,10 @@ if __name__ == "__main__":
     filtered_list = filterDataframe(df, file_names)
 
     # Print the result
-    print("Filtered List:", filtered_list)
+    print(f'Length: {len(filtered_list)}')
 
     # Step 5: Rename PDF files with "_KPJ" suffix
-    renameBills(path, filtered_list, hosp_code[0])
+    renameBills(path, filtered_list, hosp_code[3])
 
     # Step 6: Copy selected PDF files to "KPJ" folder
-    copyFileToFolder(path, filtered_list, hosp_code[0])
+    copyFileToFolder(path, filtered_list, hosp_code[3])
