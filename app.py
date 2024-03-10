@@ -60,6 +60,10 @@ class App:
 
                 # hosp_code = self.cid.identifyHospital(location)
 
+                print('---------------------------------------Detecting Table----------------------------------------')
+                for output_folder, img in zip(self.output_folder_path, img_list):
+                    Detect.parseOpt(output_folder, img, 'table.pt', 0.8)
+
     @staticmethod
     def deleteLocalFiles(file):
         local_path = f'data/temp/{file.name}'
