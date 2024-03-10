@@ -21,7 +21,7 @@ def rename_files_in_path(path, new_prefix):
 
 if __name__ == "__main__":
     # Specify the path to the directory containing the files
-    directory_path = "C:\Bill"
+    directory_path = "D:\Bill"
 
     # Specify the new prefix for the files
     new_prefix = "new_prefix"
