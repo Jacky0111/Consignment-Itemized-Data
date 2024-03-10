@@ -1,6 +1,5 @@
 # Conduct object detection utilizing YOLOv8, a pre-trained model from PyTorch.
 
-
 import os
 import cv2
 import torch
