@@ -54,14 +54,14 @@ def copyFileToFolder(directory_path, filtered, code):
 if __name__ == "__main__":
     hosp_code = ['KPJ', 'GLE', 'PAN', 'ANS']
     # Provide the file path
-    path = 'C:/Bill'
-    excel_file_path = 'C:/Users/CP1/Downloads/claim_data.xlsx'
+    path = 'D:/Bill'
+    excel_file_path = 'C:/Users/ChiaChungLim/Downloads/claim_data.xlsx'
 
     # Step 1: Get the list of file names
     file_names = getFileNames(path)
 
     # Step 2: Read "KPJ" sheet from Excel file into DataFrame
-    df = pd.read_excel(excel_file_path, sheet_name=hosp_code[3])
+    df = pd.read_excel(excel_file_path, sheet_name=hosp_code[0])
 
     # Step 3: Remove "-2" suffix from file names
     file_names = removeSuffix(file_names)
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     print(f'Length: {len(filtered_list)}')
 
     # Step 5: Rename PDF files with "_KPJ" suffix
-    renameBills(path, filtered_list, hosp_code[3])
+    renameBills(path, filtered_list, hosp_code[0])
 
     # Step 6: Copy selected PDF files to "KPJ" folder
-    copyFileToFolder(path, filtered_list, hosp_code[3])
+    copyFileToFolder(path, filtered_list, hosp_code[0])
