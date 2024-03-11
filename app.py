@@ -58,11 +58,9 @@ class App:
                 # Convert PDF to images
                 self.cid.converter(pdf_path)
 
-                # hosp_code = self.cid.identifyHospital(location)
+                self.cid.tableDetection()
 
-                print('---------------------------------------Detecting Table----------------------------------------')
-                for output_folder, img in zip(self.output_folder_path, img_list):
-                    Detect.parseOpt(output_folder, img, 'table.pt', 0.8)
+
 
     @staticmethod
     def deleteLocalFiles(file):
