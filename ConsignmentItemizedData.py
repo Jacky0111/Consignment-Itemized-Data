@@ -21,11 +21,13 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 
 
 class CID:
+    images_list = []
     images_path = None
     dataset_path = None
     output_folder_path = None
 
     def __init__(self):
+        self.images_list = []
         self.images_path = None
         self.dataset_path = None
         self.output_folder_path = None
@@ -114,22 +116,78 @@ class CID:
             img_path = os.path.join(self.output_folder_path, f'{pdf_name}_page_{page_index}.png')
             img.save(img_path, 'PNG')
 
-
     def tableDetection(self):
-        print(f'self.output_folder_path: {self.output_folder_path}')
-
         # Navigate to the specified folder path
         os.chdir(self.output_folder_path)
 
         # Use glob to find all PNG files in the current directory
-        img_list = glob.glob('*.png')
+        self.images_list = [os.path.splitext(filename)[0] for filename in glob.glob('*.png')]
 
-        current_directory = os.getcwd()
-        os.chdir(os.path.dirname(os.path.dirname(current_directory)))
+        # Move up two directories
+        os.chdir(os.path.dirname(os.path.dirname(os.getcwd())))
 
-        for img in img_list:
-            Detect.parseOpt(self.output_folder_path, img, 'table.pt', 0.8)
+        for img in self.images_list:
+            Detect.parseOpt(self.output_folder_path, img, 'table.pt', 0.9)
 
+    def rowDetection(self):
+        table_boxes_path = f'{self.output_folder_path}/labels/table_boxes.txt'
+
+        # Read values from the row boxes text file
+        with open(table_boxes_path, 'r') as file:
+            selected_pages = [int(line.split()[1]) for line in file]
+
+        # Create a list of modified image names
+        new_img_list = [img_name + '_crop' for img_name in self.images_list if int(img_name[-1]) in selected_pages]
+        print(f'new_img_list: {new_img_list}')
+
+        for img in new_img_list:
+            # Utilize the 'parseOpt' method to detect rows using the 'row.pt' file and a threshold of 0.4
+            Detect.parseOpt(self.output_folder_path, img, 'row.pt', 0.3)
+
+            # Define paths for the table image and row boxes
+            table_img_path = f'{self.output_folder_path}/{img}.png'
+            row_boxes_path = f'{self.output_folder_path}/labels/row_boxes.txt'
+
+            # Read the table image
+            tb_img = cv2.imread(table_img_path)
+            crop_img = tb_img.copy()
+
+            # Read values from the row boxes text file
+            with open(row_boxes_path, 'r') as file:
+                lines = file.readlines()
+                # Remove the first value of the line and convert them to a nested list
+                values = [list(map(float, line.strip().split()[1:])) for line in lines]
+                # Sort based on the third value (y) in ascending order
+                values.sort(key=lambda j: j[1], reverse=False)
+
+            # Update the text file with the sorted values
+            with open(row_boxes_path, 'w') as file:
+                for value in values:
+                    file.write(f'0 {value[0]} {value[1]} {value[2]} {value[3]}\n')
+
+            # Create "Row" folder
+            os.makedirs(os.path.join(self.output_folder_path, 'Row'), exist_ok=True)
+            row_folder = f'{self.output_folder_path}/Row'
+
+            # Convert the format to xywh and draw lines on the image
+            for idx, value in enumerate(values):
+                x, y, w, h = value[0], value[1], value[2], value[3]
+                y = int((y + h / 2) * tb_img.shape[0])
+                w = int(w * tb_img.shape[1])
+                h = int(h * tb_img.shape[0])
+
+                # Draw lines on the image
+                cv2.line(tb_img, (0, y), (tb_img.shape[0] + w, y), (255, 0, 0), 2)
+                cv2.line(tb_img, (0, y - h), (tb_img.shape[0] + w, y - h), (255, 0, 0), 2)
+
+                # Crop the row based on the coordinates
+                cropped_row = crop_img[y - h:y, 0:crop_img.shape[1]]
+
+                # Save the cropped row in the 'Row' folder
+                cv2.imwrite(f'{row_folder}/row_{str(idx).zfill(3)}.png', cropped_row)
+
+            # Save the annotated image
+            cv2.imwrite(f'{self.output_folder_path}/{img[:-5]}_row_revised.png', tb_img)
 
 
 if __name__ == '__main__':
