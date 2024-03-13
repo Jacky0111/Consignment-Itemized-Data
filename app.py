@@ -58,7 +58,11 @@ class App:
                 # Convert PDF to images
                 self.cid.converter(pdf_path)
 
+                # Detect Table(s)
                 self.cid.tableDetection()
+
+                # Detect Row(s)
+                self.cid.rowDetection()
 
 
 
