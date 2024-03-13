@@ -84,7 +84,7 @@ class Detect:
 
                         f.write('\n')  # Add a newline character at the end of the line
                 except (ValueError, RuntimeError):
-                    with open(f'{save_dir}/labels/row_boxes.txt', 'a') as f:
+                    with open(f'{save_dir}/labels/row_boxes.txt', 'w') as f:
                         # Loop through the values
                         for i in range(len(list_values) // 4):
                             start = i * 4
