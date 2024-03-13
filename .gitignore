@@ -1,2 +1,6 @@
 
 *.pdf
+/HB-yolo-1.1
+/output
+/runs
+/TCD-yolo-1.1
