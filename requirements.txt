@@ -13,11 +13,10 @@ streamlit~=1.30.0
 pdf2image~=1.16.3
 paddleocr~=2.7.0.3
 setuptools~=68.2.2
-ultralytics~=8.1.8
+ultralytics~=8.0.165
 pytesseract~=0.3.10
 thop~=0.1.1-2209072238
 opencv-python~=4.9.0.80
-
 
 torch~=2.0.1
 torch-utils~=0.1.2
