@@ -36,9 +36,6 @@ class Detect:
         # Directories
         save_dir = Path(project) / name  # increment run
         (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
-        print(save_dir)
-        user_input = input("Enter something: ")
-
 
         # Initialize
         set_logging()
@@ -47,20 +44,14 @@ class Detect:
 
         # Load model
         model = YOLO(weights)
-
-        current_directory = os.getcwd()
-        print("999. Current Working Directory:", current_directory)
-        print()
-
-        user_input = input("Enter something: ")
-
-        results = model.predict(source=source, save_txt=save_txt, imgsz=imgsz, conf=opt.conf_thres, iou=opt.iou_thres)
+        results = model.predict(source=source, save_txt=save_txt, imgsz=imgsz, half=half,
+                                save=True, conf=opt.conf_thres, iou=opt.iou_thres)
 
         # Get class name(s) from the YOLO model
         target_name = model.module.names if hasattr(model, 'module') else model.names
 
         # Load original image
-        ori_img = cv2.imread(f'{save_dir}/{img_name}')
+        ori_img = cv2.imread(f'{save_dir}/{img_name}.{ext}')
         gn = torch.tensor(ori_img.shape)[[1, 0, 1, 0]]  # # Normalization gain whwh
 
         # Process the detection results
@@ -77,13 +68,17 @@ class Detect:
 
             tensor_values = lines[0]
             list_values = lines[1]
+
             if save_txt:
                 try:
-                    with open(f'{save_dir}/labels/table_box.txt', 'a') as f:
+                    with open(f'{save_dir}/labels/table_boxes.txt', 'a') as f:
                         # Write the first element of the tuple (tensor) as a float
                         f.write('%g ' % tensor_values.item())  # Extract the float value from the tensor and write it
 
-                        # Write the second element of the tuple (list) as a series of floats
+                        # Write the second element as the number of page
+                        f.write('%g ' % int(img_name[-1]))  # Write each number followed by a space
+
+                        # Write the third element of the tuple (list) as a series of floats
                         for number in list_values:
                             f.write('%g ' % number)  # Write each number followed by a space
 
@@ -133,14 +128,9 @@ class Detect:
 
         print(f'Saved path: {saved_path}')
         print(f'Image name: {image_name}')
-        current_directory = os.getcwd()
-        print("100. Current Working Directory:", current_directory)
-        print()
-
-        user_input = input("Enter something: ")
 
         parser.add_argument('--weights', nargs='+', type=str, default=f'C:/Users/ChiaChungLim/PycharmProjects/Consignment-Itemized-Data/{best_weight}', help='model.pt path(s)')
-        parser.add_argument('--source', type=str, default=f'{saved_path}/{image_name}', help='source')
+        parser.add_argument('--source', type=str, default=f'{saved_path}/{image_name}.png', help='source')
         parser.add_argument('--img-size', type=int, default=416, help='inference size (pixels)')
         parser.add_argument('--conf-thres', type=float, default=conf, help='object confidence threshold')
         parser.add_argument('--iou-thres', type=float, default=0.25, help='IOU threshold for NMS')
@@ -159,8 +149,5 @@ class Detect:
         parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
         opt = parser.parse_args()
         print(opt)
-
-        user_input = input("Enter something: ")
-
 
         Detect.detect(opt)
