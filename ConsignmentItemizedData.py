@@ -9,7 +9,12 @@ import pytesseract
 import numpy as np
 from datetime import datetime
 from paddleocr import PaddleOCR
+from deskew import determine_skew
 from pdf2image import convert_from_path
+
+from skimage import io
+from skimage.color import rgb2gray
+from skimage.transform import rotate
 
 from Detect import Detect
 
@@ -112,9 +117,28 @@ class CID:
     '''
     def saveImages(self, images, pdf_name):
         for idx, img in enumerate(images):
+            deskewed_img = CID.deskew(np.array(img))
             page_index = str(idx + 1).zfill(2)
             img_path = os.path.join(self.output_folder_path, f'{pdf_name}_page_{page_index}.png')
-            img.save(img_path, 'PNG')
+            cv2.imwrite(img_path, deskewed_img)
+
+    '''
+    Deskews an image and saves it back to the input path.
+    @:param input_path (str)
+    '''
+    @staticmethod
+    def deskew(image):
+        # Convert the image to grayscale
+        grayscale = rgb2gray(image)
+
+        # Determine the skew angle of the image
+        angle = determine_skew(grayscale)
+
+        # Rotate the image to correct the skew and scale it back to 8-bit
+        rotated = rotate(image, angle, resize=True) * 255
+        rotated = rotated.astype(np.uint8)
+
+        return rotated
 
     def tableDetection(self):
         # Navigate to the specified folder path
@@ -127,7 +151,7 @@ class CID:
         os.chdir(os.path.dirname(os.path.dirname(os.getcwd())))
 
         for img in self.images_list:
-            Detect.parseOpt(self.output_folder_path, img, 'table.pt', 0.9)
+            Detect.parseOpt(self.output_folder_path, img, 'table.pt', 0.7)
 
     def rowDetection(self):
         table_boxes_path = f'{self.output_folder_path}/labels/table_boxes.txt'
@@ -140,7 +164,8 @@ class CID:
         new_img_list = [img_name + '_crop' for img_name in self.images_list if int(img_name[-1]) in selected_pages]
         print(f'new_img_list: {new_img_list}')
 
-        for img in new_img_list:
+        for page, img in zip(selected_pages, new_img_list):
+            print(f'page: {page}')
             # Utilize the 'parseOpt' method to detect rows using the 'row.pt' file and a threshold of 0.4
             Detect.parseOpt(self.output_folder_path, img, 'row.pt', 0.3)
 
@@ -160,10 +185,16 @@ class CID:
                 # Sort based on the third value (y) in ascending order
                 values.sort(key=lambda j: j[1], reverse=False)
 
-            # Update the text file with the sorted values
-            with open(row_boxes_path, 'w') as file:
+            # Save the text file with the sorted values
+            with open(f'{row_boxes_path[:-4]}_{page}.txt', 'w') as output_file:
                 for value in values:
-                    file.write(f'0 {value[0]} {value[1]} {value[2]} {value[3]}\n')
+                    output_file.write(f'{page} {value[0]} {value[1]} {value[2]} {value[3]}\n')
+
+            # # Update the text file with the sorted values
+            # with open(row_boxes_path, 'a') as file:
+            #     for value in values:
+            #         file.write(f'{page} {value[0]} {value[1]} {value[2]} {value[3]}\n')
+            #         print(f'{page} {value[0]} {value[1]} {value[2]} {value[3]}')
 
             # Create "Row" folder
             os.makedirs(os.path.join(self.output_folder_path, 'Row'), exist_ok=True)
