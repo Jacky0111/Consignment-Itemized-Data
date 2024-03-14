@@ -1,6 +1,5 @@
 
 *.pdf
-/HB-yolo-1.1
+/model
 /output
 /runs
-/TCD-yolo-1.1
