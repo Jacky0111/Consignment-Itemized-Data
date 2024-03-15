@@ -1,4 +1,5 @@
 import os
+from ultralytics import YOLO
 
 def rename_files_in_path(path, new_prefix):
     # Change the current working directory to the specified path
@@ -21,7 +22,7 @@ def rename_files_in_path(path, new_prefix):
 
 if __name__ == "__main__":
     # Specify the path to the directory containing the files
-    directory_path = "D:\Bill"
+    directory_path = "C:/Bill/KPJ"
 
     # Specify the new prefix for the files
     new_prefix = "new_prefix"
