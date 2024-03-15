@@ -1,0 +1,7 @@
+path: C:/Users/CP1/Documents/GitHub/Itemized-Billing/TCD-yolo-1.1
+train: train.txt # train images
+val: valid.txt # val images
+
+# Classes
+nc: 1 # Number of classes
+names: ['Row']  # List of class names
