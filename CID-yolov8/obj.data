@@ -1,4 +1,0 @@
-classes = 1
-train = CID-yolov8/train.txt
-names = CID-yolov8/obj.names
-backup = backup/
