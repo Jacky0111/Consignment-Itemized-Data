@@ -151,7 +151,7 @@ class CID:
         os.chdir(os.path.dirname(os.path.dirname(os.getcwd())))
 
         for img in self.images_list:
-            Detect.parseOpt(self.output_folder_path, img, 'table.pt', 0.7)
+            Detect.parseOpt(self.output_folder_path, img, 'best.pt', 0.7)
 
     def rowDetection(self):
         table_boxes_path = f'{self.output_folder_path}/labels/table_boxes.txt'
