@@ -17,8 +17,7 @@ from skimage.color import rgb2gray
 from skimage.transform import rotate
 
 from Detect import Detect
-
-# from OpticalCharacterRecognition import OCR
+from OpticalCharacterRecognition import OCR
 
 poppler_path = r'C:\Program Files\poppler-23.05.0\Library\bin'
 os.environ["PATH"] += os.pathsep + poppler_path
@@ -77,27 +76,6 @@ class CID:
         for path in files:
             shutil.copy(path, destination)  # Copy the file to the destination folder
 
-    # def identifyHospital(self, folder):
-
-    # # Get a list of all PNG images in the folder
-    # all_images = [file for file in os.listdir(folder) if file.endswith('.png')]
-    #
-    # # Iterate through each PNG image and perform OCR
-    # for image_file in all_images:
-    #     image_path = os.path.join(folder, image_file)
-    #
-    #     # Read the image using OpenCV
-    #     img = cv2.imread(image_path)
-    #
-    #     # Perform OCR using pytesseract
-    #     text = pytesseract.image_to_string(img, config=r'--oem 3 --psm 4 -l eng')
-    #
-    #     for keyword, hospital_code in hospital_dict.items():
-    #         if re.search(keyword, all_extracted_text, re.IGNORECASE):
-    #             return hospital_code
-    #
-    # return None
-
     def converter(self, file_path):
         # Split folder and file name
         self.output_folder_path, file_name_with_ext = os.path.split(file_path)
@@ -151,7 +129,7 @@ class CID:
         os.chdir(os.path.dirname(os.path.dirname(os.getcwd())))
 
         for img in self.images_list:
-            Detect.parseOpt(self.output_folder_path, img, 'best.pt', 0.7)
+            Detect.parseOpt(self.output_folder_path, img, 'table.pt', 0.7)
 
     def rowDetection(self):
         table_boxes_path = f'{self.output_folder_path}/labels/table_boxes.txt'
@@ -173,6 +151,8 @@ class CID:
             table_img_path = f'{self.output_folder_path}/{img}.png'
             row_boxes_path = f'{self.output_folder_path}/labels/row_boxes.txt'
 
+            print(f'table_img_path: {table_img_path}')
+
             # Read the table image
             tb_img = cv2.imread(table_img_path)
             crop_img = tb_img.copy()
@@ -182,26 +162,52 @@ class CID:
                 lines = file.readlines()
                 # Remove the first value of the line and convert them to a nested list
                 values = [list(map(float, line.strip().split()[1:])) for line in lines]
-                # Sort based on the third value (y) in ascending order
-                values.sort(key=lambda j: j[1], reverse=False)
+
+            threshold = 0.003
+            merged_values = []
+
+            # Sort based on the third value (y) in ascending order
+            values.sort(key=lambda j: j[1], reverse=False)
+
+            # Merge rows if y-coordinate difference is less than or equal to the threshold
+            merged_row = values[0]
+            for idx in range(1, len(values)):
+                current_row = values[idx]
+                prev_row = merged_row
+
+                print(f'{idx-1}. {prev_row}')
+                print(f'{idx}. {current_row}')
+                print(f'Diff: {abs(current_row[1] - prev_row[1])}')
+
+                if abs(current_row[1] - prev_row[1]) <= threshold:
+                    # Merge current row with previous row
+                    merged_row = [
+                        min(prev_row[0], current_row[0]),  # Choose smaller X
+                        current_row[1],  # Choose current Y
+                        current_row[2],  # Choose current W
+                        max(prev_row[3], current_row[3])  # Choose bigger H
+                    ]
+                else:
+                    # Append merged row to the list and update merged_row
+                    merged_values.append(merged_row)
+                    merged_row = current_row
+
+                print(f'Merged: {merged_row}')
+
+            # Append the last merged row
+            merged_values.append(merged_row)
 
             # Save the text file with the sorted values
             with open(f'{row_boxes_path[:-4]}_{page}.txt', 'w') as output_file:
-                for value in values:
+                for value in merged_values:
                     output_file.write(f'{page} {value[0]} {value[1]} {value[2]} {value[3]}\n')
-
-            # # Update the text file with the sorted values
-            # with open(row_boxes_path, 'a') as file:
-            #     for value in values:
-            #         file.write(f'{page} {value[0]} {value[1]} {value[2]} {value[3]}\n')
-            #         print(f'{page} {value[0]} {value[1]} {value[2]} {value[3]}')
 
             # Create "Row" folder
             os.makedirs(os.path.join(self.output_folder_path, 'Row'), exist_ok=True)
             row_folder = f'{self.output_folder_path}/Row'
 
             # Convert the format to xywh and draw lines on the image
-            for idx, value in enumerate(values):
+            for idx, value in enumerate(merged_values):
                 x, y, w, h = value[0], value[1], value[2], value[3]
                 y = int((y + h / 2) * tb_img.shape[0])
                 w = int(w * tb_img.shape[1])
@@ -215,10 +221,17 @@ class CID:
                 cropped_row = crop_img[y - h:y, 0:crop_img.shape[1]]
 
                 # Save the cropped row in the 'Row' folder
-                cv2.imwrite(f'{row_folder}/row_{str(idx).zfill(3)}.png', cropped_row)
+                cv2.imwrite(f'{row_folder}/row_{page}_{str(idx).zfill(3)}.png', cropped_row)
 
             # Save the annotated image
             cv2.imwrite(f'{self.output_folder_path}/{img[:-5]}_row_revised.png', tb_img)
+
+            # ocr = OCR(self.output_folder_path, row_folder)
+            # ocr.runner()
+
+    def checkRedundantRows(self):
+        pass
+
 
 
 if __name__ == '__main__':
