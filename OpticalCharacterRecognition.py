@@ -9,7 +9,6 @@ from TabularRule import TabularRule
 
 class OCR:
     bill = None
-    code = None
     output_path = None  # Current save path
     images_path = None  # Input images path
     is_non_native = False
@@ -19,9 +18,8 @@ class OCR:
     table_data_list = []
     data_coordinate_list = []
 
-    def __init__(self, code, output_path, images_path):
+    def __init__(self, output_path, images_path):
         self.bill = Bill()
-        self.code = code
         self.table_data_list.clear()
         self.output_path = output_path
         self.images_path = images_path
@@ -41,9 +39,9 @@ class OCR:
             temp_df = self.imageToData(img)
             temp_df = temp_df.sort_values(by='left', ascending=True)
 
-            # Additional step to check whether the header is correct detected
-            if idx == 0:
-                temp_df = self.checkHospital(temp_df)
+            # # Additional step to check whether the header is correct detected
+            # if idx == 0:
+            #     temp_df = self.checkHospital(temp_df)
 
             # Concatenate the data to the final DataFrame
             self.df = pd.concat([self.df, temp_df], ignore_index=True)
