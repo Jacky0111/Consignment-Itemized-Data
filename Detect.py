@@ -113,9 +113,14 @@ class Detect:
                 annotator.box_label(x2y2, label, (0, 0, 255))  # Add one xyxy box to image with label
                 annotated_img = annotator.result()  # Return annotated image as array
 
+            print(f'Image name: {img_name}')
+
             det = 'table' if Path(weights).stem.lower() == 'table' else 'row'
             annotated_img_name = f"{save_dir}/{img_name[:-5] if det=='row' else img_name}_{det}.png"
+            print(f'annotated_img_name: {annotated_img_name}')
             cv2.imwrite(annotated_img_name, annotated_img)
+
+            print(f'Image name: {img_name}')
 
     '''
     Define the required arguments to command-line interfaces.
@@ -129,7 +134,7 @@ class Detect:
         print(f'Saved path: {saved_path}')
         print(f'Image name: {image_name}')
 
-        parser.add_argument('--weights', nargs='+', type=str, default=f'C:/Users/ChiaChungLim/PycharmProjects/Consignment-Itemized-Data/{best_weight}', help='model.pt path(s)')
+        parser.add_argument('--weights', nargs='+', type=str, default=f'C:/Users/ChiaChungLim/PycharmProjects/Consignment-Itemized-Data/model/{best_weight}', help='model.pt path(s)')
         parser.add_argument('--source', type=str, default=f'{saved_path}/{image_name}.png', help='source')
         parser.add_argument('--img-size', type=int, default=416, help='inference size (pixels)')
         parser.add_argument('--conf-thres', type=float, default=conf, help='object confidence threshold')
