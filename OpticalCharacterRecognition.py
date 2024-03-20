@@ -51,6 +51,8 @@ class OCR:
             cv2.imwrite(self.images_path + f'/bbox_{file}', img)
 
             bill_list = self.bill.assignCoordinate(temp_df)
+            for bill in bill_list:
+                print(f'bill_list: {bill}')
 
             # Store the bill in tabular format
             tr = TabularRule(bill_list, True if idx == 0 else False)
@@ -59,6 +61,7 @@ class OCR:
 
         # Use list comprehension to create tb_list in a more concise way
         tb_list = [[element.text for element in row] for row in self.table_data_list]
+        print(f'tb_list: {tb_list}')
         itemized_data = pd.DataFrame(tb_list[1:], columns=tb_list[0])
 
         self.saveToExcel(self.df, 'image_to_data')
