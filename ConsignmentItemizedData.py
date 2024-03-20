@@ -140,7 +140,7 @@ class CID:
 
         # Create a list of modified image names
         new_img_list = [img_name + '_crop' for img_name in self.images_list if int(img_name[-1]) in selected_pages]
-        print(f'new_img_list: {new_img_list}')
+        # print(f'new_img_list: {new_img_list}')
 
         for page, img in zip(selected_pages, new_img_list):
             print(f'page: {page}')
@@ -150,8 +150,6 @@ class CID:
             # Define paths for the table image and row boxes
             table_img_path = f'{self.output_folder_path}/{img}.png'
             row_boxes_path = f'{self.output_folder_path}/labels/row_boxes.txt'
-
-            print(f'table_img_path: {table_img_path}')
 
             # Read the table image
             tb_img = cv2.imread(table_img_path)
@@ -165,6 +163,7 @@ class CID:
 
             threshold = 0.003
             merged_values = []
+            clean_values = []
 
             # Sort based on the third value (y) in ascending order
             values.sort(key=lambda j: j[1], reverse=False)
@@ -175,9 +174,9 @@ class CID:
                 current_row = values[idx]
                 prev_row = merged_row
 
-                print(f'{idx-1}. {prev_row}')
-                print(f'{idx}. {current_row}')
-                print(f'Diff: {abs(current_row[1] - prev_row[1])}')
+                # print(f'{idx-1}. {prev_row}')
+                # print(f'{idx}. {current_row}')
+                # print(f'Diff: {abs(current_row[1] - prev_row[1])}')
 
                 if abs(current_row[1] - prev_row[1]) <= threshold:
                     # Merge current row with previous row
@@ -192,7 +191,7 @@ class CID:
                     merged_values.append(merged_row)
                     merged_row = current_row
 
-                print(f'Merged: {merged_row}')
+                # print(f'Merged: {merged_row}')
 
             # Append the last merged row
             merged_values.append(merged_row)
@@ -221,17 +220,24 @@ class CID:
                 cropped_row = crop_img[y - h:y, 0:crop_img.shape[1]]
 
                 # Save the cropped row in the 'Row' folder
-                cv2.imwrite(f'{row_folder}/row_{page}_{str(idx).zfill(3)}.png', cropped_row)
+                cropped_path = f'{row_folder}/row_{page}_{str(idx).zfill(3)}.png'
+                cv2.imwrite(cropped_path, cropped_row)
+                check_img = cv2.imread(cropped_path)
+                gray = cv2.cvtColor(check_img, cv2.COLOR_BGR2GRAY)
+                text = pytesseract.image_to_string(gray).strip()
+                if not text:
+                    os.remove(cropped_path)
 
-            # Save the annotated image
+                    # print(f'text: {text}, {bool(text)} {cropped_path}')
+
+                    # Save the annotated image
             cv2.imwrite(f'{self.output_folder_path}/{img[:-5]}_row_revised.png', tb_img)
 
-            # ocr = OCR(self.output_folder_path, row_folder)
-            # ocr.runner()
+            ocr = OCR(self.output_folder_path, row_folder)
+            ocr.runner()
 
     def checkRedundantRows(self):
         pass
-
 
 
 if __name__ == '__main__':
