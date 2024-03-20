@@ -214,4 +214,4 @@ class TabularRule:
     '''
     @staticmethod
     def rule7(dist):
-        return dist >= 30
+        return dist >= 20
