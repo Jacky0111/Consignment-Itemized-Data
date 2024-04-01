@@ -163,7 +163,6 @@ class CID:
 
             threshold = 0.003
             merged_values = []
-            clean_values = []
 
             # Sort based on the third value (y) in ascending order
             values.sort(key=lambda j: j[1], reverse=False)
