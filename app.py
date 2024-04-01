@@ -64,8 +64,6 @@ class App:
                 # Detect Row(s)
                 self.cid.rowDetection()
 
-
-
     @staticmethod
     def deleteLocalFiles(file):
         local_path = f'data/temp/{file.name}'
