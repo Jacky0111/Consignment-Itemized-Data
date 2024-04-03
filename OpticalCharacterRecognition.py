@@ -11,12 +11,10 @@ class OCR:
     bill = None
     output_path = None  # Current save path
     images_path = None  # Input images path
-    is_non_native = False
 
     counter = 0
     df = pd.DataFrame()
     table_data_list = []
-    data_coordinate_list = []
 
     def __init__(self, output_path, images_path):
         self.bill = Bill()
@@ -39,9 +37,9 @@ class OCR:
             temp_df = self.imageToData(img)
             temp_df = temp_df.sort_values(by='left', ascending=True)
 
-            # # Additional step to check whether the header is correct detected
-            # if idx == 0:
-            #     temp_df = self.checkHospital(temp_df)
+            # Additional step to check whether the header is correct detected
+            if idx == 0:
+                temp_df = self.checkHospital(temp_df)
 
             # Concatenate the data to the final DataFrame
             self.df = pd.concat([self.df, temp_df], ignore_index=True)
@@ -65,23 +63,7 @@ class OCR:
         for tb in tb_list:
             print(f'tb_list (Before): {tb}')
 
-        # # Function to transform the list
-        # def transform_list(data_list):
-        #     transformed_list = []
-        #     for item in data_list:
-        #         if item[0] == "Price Code Description":
-        #             # Split the first element into Price Code and Description
-        #             price_code, description = item[0].split(" ", 1)
-        #             # Append the transformed item to the new list
-        #             transformed_list.append([price_code, description] + item[1:])
-        #         else:
-        #             transformed_list.append(item)  # Append unchanged item if condition not met
-        #     return transformed_list
-        #
-        # # Transform the list
-        # tb_list = transform_list(tb_list)
-
-        tb_list[0] = tb_list[1][:4] + [f"{item} (RM)" for item in tb_list[0]]
+        tb_list[0] = tb_list[1][:5] + [f"{item} (RM)" for item in tb_list[0]]
         del tb_list[1]
 
         for tb in tb_list:
@@ -91,7 +73,6 @@ class OCR:
         print(f'tb_list: {tb_list}')
 
         itemized_data = pd.DataFrame(tb_list[1:], columns=tb_list[0])
-
 
         self.saveToExcel(self.df, 'image_to_data')
         self.saveToExcel(itemized_data, 'itemized_data')
@@ -118,7 +99,8 @@ class OCR:
     '''
     @staticmethod
     def imageToData(img):
-        paddle = PaddleOCR(use_angle_cls=True, lang='en')
+        # paddle = PaddleOCR(use_angle_cls=True, lang='en')
+        paddle = PaddleOCR(det_algorithm='DB', det_db_box_thresh=0.3, det_db_unclip_ratio=2.0)
         result = paddle.ocr(img, cls=True)
 
         # Extract information from the result
