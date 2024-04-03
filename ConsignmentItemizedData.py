@@ -8,7 +8,6 @@ import shutil
 import pytesseract
 import numpy as np
 from datetime import datetime
-# from paddleocr import PaddleOCR
 from deskew import determine_skew
 from pdf2image import convert_from_path
 
