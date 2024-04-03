@@ -61,8 +61,37 @@ class OCR:
 
         # Use list comprehension to create tb_list in a more concise way
         tb_list = [[element.text for element in row] for row in self.table_data_list]
+
+        for tb in tb_list:
+            print(f'tb_list (Before): {tb}')
+
+        # # Function to transform the list
+        # def transform_list(data_list):
+        #     transformed_list = []
+        #     for item in data_list:
+        #         if item[0] == "Price Code Description":
+        #             # Split the first element into Price Code and Description
+        #             price_code, description = item[0].split(" ", 1)
+        #             # Append the transformed item to the new list
+        #             transformed_list.append([price_code, description] + item[1:])
+        #         else:
+        #             transformed_list.append(item)  # Append unchanged item if condition not met
+        #     return transformed_list
+        #
+        # # Transform the list
+        # tb_list = transform_list(tb_list)
+
+        tb_list[0] = tb_list[1][:4] + [f"{item} (RM)" for item in tb_list[0]]
+        del tb_list[1]
+
+        for tb in tb_list:
+            print(f'tb_list (After): {tb}')
+
+        print()
         print(f'tb_list: {tb_list}')
+
         itemized_data = pd.DataFrame(tb_list[1:], columns=tb_list[0])
+
 
         self.saveToExcel(self.df, 'image_to_data')
         self.saveToExcel(itemized_data, 'itemized_data')
