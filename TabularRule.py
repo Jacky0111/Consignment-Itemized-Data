@@ -168,7 +168,7 @@ class TabularRule:
         return counter == 0
 
     '''
-    Rule 3: Check if the distance is lower than 30 and the row is last element. 
+    Rule 3: Check if the distance is lower than 40 and the row is last element. 
     @param dist: A integer representing the distance.
     @param counter: An integer representing the row index.
     @param data: A list of data rows.
@@ -176,19 +176,19 @@ class TabularRule:
     '''
     @staticmethod
     def rule3(dist, counter, data):
-        return dist < 30 and counter == len(data) - 1
+        return dist < 40 and counter == len(data) - 1
 
     '''
-    Rule 4: Check if the distance is lower than 30.
+    Rule 4: Check if the distance is lower than 40.
     @param dist: A integer representing the distance.
     @return True if rule is applied, False otherwise.
     '''
     @staticmethod
     def rule4(dist):
-        return dist < 30
+        return dist < 40
 
     '''
-    Rule 5: Check if the distance is higher or equal to 30 and the row is last element.
+    Rule 5: Check if the distance is higher or equal to 40 and the row is last element.
     @param dist: A integer representing the distance.
     @param counter: An integer representing the row index.
     @param data: A list of data rows.
@@ -196,16 +196,16 @@ class TabularRule:
     '''
     @staticmethod
     def rule5(dist, counter, data):
-        return dist >= 30 and counter == len(data) - 1
+        return dist >= 40 and counter == len(data) - 1
 
     '''
-    Rule 6: Check if the distance is higher or equal to 30.
+    Rule 6: Check if the distance is higher or equal to 40.
     @param dist: A integer representing the distance.
     @return True if rule is applied, False otherwise.
     '''
     @staticmethod
     def rule6(dist):
-        return dist >= 30
+        return dist >= 40
 
     '''
     Rule 7: For KPJ hospital bill, add "Item" as the first column name.
@@ -214,4 +214,4 @@ class TabularRule:
     '''
     @staticmethod
     def rule7(dist):
-        return dist >= 20
+        return dist >= 40
