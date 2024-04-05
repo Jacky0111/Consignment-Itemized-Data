@@ -68,25 +68,36 @@ class OCR:
                 print(t3)
                 print('t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3')
 
+                if t3.shape[0] != 7:
+                    prev_row = t3.iloc[-2]
+
+                    # Calculate new row data
+                    new_left = int(prev_row['width'] / 3 * 2) + 41
+                    new_width = int(prev_row['width'] / 3 * 2)
+                    new_row_data = {'left': new_left, 'top': prev_row['top'], 'width': new_width,
+                                    'height': prev_row['height'], 'conf': prev_row['conf'], 'text': ''}
+
+                    # Get the index where you want to insert the row
+                    insert_index = len(t3) - 2
+
+                    # Split the DataFrame into two parts: before and after the insert index
+                    t3_before = t3.iloc[:insert_index]
+                    t3_after = t3.iloc[insert_index:]
+
+                    # Concatenate the two parts along with the new row
+                    t3 = pd.concat([t3_before, new_row_data, t3_after], ignore_index=True)
+
+                    print(t3)
+                    print('t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3')
+
                 cols_name, temp_df = self.checkHospital(t3.iloc[:, :-1])
             else:
-                print(f'temp_df (Before): {temp_df}')
                 # Apply the function to each text in the DataFrame
                 temp_df['most_similar_header'], temp_df['similarity_score'] = zip(
                     *temp_df['text'].apply(OCR.find_most_similar_header_and_similarity, header_name=cols_name))
 
-                print(f'temp_df (Middle): {temp_df}')
-
                 # Filter rows with similarity score less than 50
                 temp_df = temp_df[temp_df['similarity_score'] <= 50]
-
-                print(f'temp_df (After): {temp_df}')
-
-                # # Apply the function to each row in the DataFrame
-                # temp_df['similarity_ratio'] = temp_df.apply(
-                #     lambda row: OCR.check_similarity(row['text'], row['most_similar_header'] or ''), axis=1)
-                #
-                # temp_df = temp_df[temp_df['similarity_ratio'] > 0]
 
                 # Concatenate the data to the final DataFrame
                 self.df = pd.concat([self.df, temp_df], ignore_index=True)
