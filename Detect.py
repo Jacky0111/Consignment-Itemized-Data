@@ -76,7 +76,9 @@ class Detect:
                         f.write('%g ' % tensor_values.item())  # Extract the float value from the tensor and write it
 
                         # Write the second element as the number of page
-                        f.write('%g ' % int(img_name[-1]))  # Write each number followed by a space
+                        f.write('%g ' % int(img_name.split('_')[-1]))  # Write each number followed by a space
+                        print(f'int(img_name[-1]): {int(img_name.split("_")[-1])}')
+                        # page_numbers = [string.split('_')[-1] for string in strings]
 
                         # Write the third element of the tuple (list) as a series of floats
                         for number in list_values:
@@ -102,6 +104,8 @@ class Detect:
                 crop_img = ori_img[int(y1):int(y2), int(x1):int(x2)]  # Cropping the image based on the coordinates
                 cv2.imwrite(crop_img_name, crop_img)
 
+                print(f'Crop Image Name: {crop_img_name}')
+
             annotated_img = None
             for box, x2y2 in zip(result.boxes, xyxy):
                 cls = box.cls
@@ -113,14 +117,14 @@ class Detect:
                 annotator.box_label(x2y2, label, (0, 0, 255))  # Add one xyxy box to image with label
                 annotated_img = annotator.result()  # Return annotated image as array
 
-            print(f'Image name: {img_name}')
+            # print(f'Image name: {img_name}')
 
             det = 'table' if Path(weights).stem.lower() == 'table' else 'row'
             annotated_img_name = f"{save_dir}/{img_name[:-5] if det=='row' else img_name}_{det}.png"
             print(f'annotated_img_name: {annotated_img_name}')
             cv2.imwrite(annotated_img_name, annotated_img)
 
-            print(f'Image name: {img_name}')
+            # print(f'Image name: {img_name}')
 
     '''
     Define the required arguments to command-line interfaces.
