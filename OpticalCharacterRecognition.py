@@ -73,10 +73,12 @@ class OCR:
                 print(f'temp_df (Before): {temp_df}')
                 # Apply the function to each text in the DataFrame
                 temp_df['most_similar_header'], temp_df['similarity_score'] = zip(
-                    *temp_df['text'].apply(OCR.find_most_similar_header_and_similarity))
+                    *temp_df['text'].apply(OCR.find_most_similar_header_and_similarity, header_name=cols_name))
+
+                print(f'temp_df (Middle): {temp_df}')
 
                 # Filter rows with similarity score less than 50
-                temp_df = temp_df[temp_df['similarity_score'] >= 50]
+                temp_df = temp_df[temp_df['similarity_score'] < 50]
 
                 print(f'temp_df (After): {temp_df}')
 
