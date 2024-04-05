@@ -78,7 +78,7 @@ class OCR:
                 print(f'temp_df (Middle): {temp_df}')
 
                 # Filter rows with similarity score less than 50
-                temp_df = temp_df[temp_df['similarity_score'] < 50]
+                temp_df = temp_df[temp_df['similarity_score'] <= 50]
 
                 print(f'temp_df (After): {temp_df}')
 
