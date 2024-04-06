@@ -69,13 +69,16 @@ class OCR:
                 print('t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3')
 
                 if t3.shape[0] != 7:
-                    prev_row = t3.iloc[-2]
+                    t3.loc[4, 'width'] /= 3
 
-                    # Calculate new row data
-                    new_left = prev_row['width'] / 3 * 2 + 41
-                    new_width = prev_row['width'] / 3 * 2
-                    new_row_data = {'left': new_left, 'top': prev_row['top'], 'width': new_width,
-                                    'height': prev_row['height'], 'conf': prev_row['conf'], 'text': ''}
+                    x1 = t3.loc[4, 'left'] + t3.loc[4, 'width'] + 41
+                    w1 = t3.loc[4, 'width'] * 2
+
+                    # # Calculate new row data
+                    # new_left = prev_row['width'] / 3 * 2 + 41
+                    # new_width = prev_row['width'] / 3 * 2
+                    new_row_data = {'left': x1, 'top': t3.loc[4, 'top'], 'width': w1,
+                                    'height': t3.loc[4, 'height'], 'conf': t3.loc[4, 'conf'], 'text': ''}
                     new_row_df = pd.DataFrame(new_row_data, index=[0])
 
                     # Get the index where you want to insert the row
@@ -120,6 +123,9 @@ class OCR:
         # Use list comprehension to create tb_list in a more concise way
         tb_list = [[element.text for element in row] for row in self.table_data_list]
 
+        print()
+        print(f'tb_list 1: \t{tb_list}')
+
         self.cols.append(tb_list[0])
 
         # Define a regular expression pattern to match the date in the format DD/MM/YYYY
@@ -147,7 +153,7 @@ class OCR:
                 # Print the sublist elements separated by commas
 
         print()
-        print(f'tb_list: {tb_list}')
+        print(f'tb_list 2: \t{tb_list}')
 
         itemized_data = pd.DataFrame(tb_list[1:], columns=self.cols[0])
 
