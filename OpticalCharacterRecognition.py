@@ -72,20 +72,21 @@ class OCR:
                     prev_row = t3.iloc[-2]
 
                     # Calculate new row data
-                    new_left = int(prev_row['width'] / 3 * 2) + 41
-                    new_width = int(prev_row['width'] / 3 * 2)
+                    new_left = prev_row['width'] / 3 * 2 + 41
+                    new_width = prev_row['width'] / 3 * 2
                     new_row_data = {'left': new_left, 'top': prev_row['top'], 'width': new_width,
                                     'height': prev_row['height'], 'conf': prev_row['conf'], 'text': ''}
+                    new_row_df = pd.DataFrame(new_row_data, index=[0])
 
                     # Get the index where you want to insert the row
-                    insert_index = len(t3) - 2
+                    insert_index = len(t3) - 1
 
                     # Split the DataFrame into two parts: before and after the insert index
                     t3_before = t3.iloc[:insert_index]
                     t3_after = t3.iloc[insert_index:]
 
                     # Concatenate the two parts along with the new row
-                    t3 = pd.concat([t3_before, new_row_data, t3_after], ignore_index=True)
+                    t3 = pd.concat([t3_before, new_row_df, t3_after], ignore_index=True)
 
                     print(t3)
                     print('t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3')
