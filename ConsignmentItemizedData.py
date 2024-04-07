@@ -137,17 +137,9 @@ class CID:
         with open(table_boxes_path, 'r') as file:
             selected_pages = [int(line.split()[1]) for line in file]
 
-        print(f'selected_pages: {selected_pages}')
-
-        print(f'self.images_list: {self.images_list}')
         # Create a list of modified image names
-        new_img_list = [img_name + '_crop' for img_name in self.images_list if
-                        int(img_name.split('_')[-1]) in selected_pages]
-        print(f'new_img_list: {new_img_list}')
-
-        # Create "Row" folder
-        os.makedirs(os.path.join(self.output_folder_path, 'Row'), exist_ok=True)
-        row_folder = f'{self.output_folder_path}/Row'
+        new_img_list = [img_name + '_crop' for img_name in self.images_list if int(img_name[-1]) in selected_pages]
+        # print(f'new_img_list: {new_img_list}')
 
         for page, img in zip(selected_pages, new_img_list):
             print(f'page: {page}')
@@ -180,6 +172,10 @@ class CID:
                 current_row = values[idx]
                 prev_row = merged_row
 
+                # print(f'{idx-1}. {prev_row}')
+                # print(f'{idx}. {current_row}')
+                # print(f'Diff: {abs(current_row[1] - prev_row[1])}')
+
                 if abs(current_row[1] - prev_row[1]) <= threshold:
                     # Merge current row with previous row
                     merged_row = [
@@ -193,6 +189,8 @@ class CID:
                     merged_values.append(merged_row)
                     merged_row = current_row
 
+                # print(f'Merged: {merged_row}')
+
             # Append the last merged row
             merged_values.append(merged_row)
 
@@ -200,6 +198,10 @@ class CID:
             with open(f'{row_boxes_path[:-4]}_{page}.txt', 'w') as output_file:
                 for value in merged_values:
                     output_file.write(f'{page} {value[0]} {value[1]} {value[2]} {value[3]}\n')
+
+            # Create "Row" folder
+            os.makedirs(os.path.join(self.output_folder_path, 'Row'), exist_ok=True)
+            row_folder = f'{self.output_folder_path}/Row'
 
             # Convert the format to xywh and draw lines on the image
             for idx, value in enumerate(merged_values):
@@ -229,8 +231,8 @@ class CID:
                     # Save the annotated image
             cv2.imwrite(f'{self.output_folder_path}/{img[:-5]}_row_revised.png', tb_img)
 
-        ocr = OCR(self.output_folder_path, row_folder)
-        ocr.runner()
+            ocr = OCR(self.output_folder_path, row_folder)
+            ocr.runner()
 
     def checkRedundantRows(self):
         pass
