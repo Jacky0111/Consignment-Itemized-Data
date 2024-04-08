@@ -69,6 +69,7 @@ class TabularRule:
 
             elif TabularRule.rule4(distance):
                 print('Comply Rule 4')
+                # print(distance)
                 content += ' ' + text
                 temp_x1 = x2 if not rule4 else temp_x1
                 rule4 = True
@@ -176,7 +177,7 @@ class TabularRule:
     '''
     @staticmethod
     def rule3(dist, counter, data):
-        return dist < 40 and counter == len(data) - 1
+        return dist <= 40 and counter == len(data) - 1
 
     '''
     Rule 4: Check if the distance is lower than 40.
@@ -185,7 +186,7 @@ class TabularRule:
     '''
     @staticmethod
     def rule4(dist):
-        return dist < 40
+        return dist <= 40
 
     '''
     Rule 5: Check if the distance is higher or equal to 40 and the row is last element.
@@ -196,7 +197,7 @@ class TabularRule:
     '''
     @staticmethod
     def rule5(dist, counter, data):
-        return dist >= 40 and counter == len(data) - 1
+        return dist > 40 and counter == len(data) - 1
 
     '''
     Rule 6: Check if the distance is higher or equal to 40.
@@ -205,7 +206,7 @@ class TabularRule:
     '''
     @staticmethod
     def rule6(dist):
-        return dist >= 40
+        return dist > 40
 
     '''
     Rule 7: For KPJ hospital bill, add "Item" as the first column name.
@@ -214,4 +215,4 @@ class TabularRule:
     '''
     @staticmethod
     def rule7(dist):
-        return dist >= 40
+        return dist > 40
