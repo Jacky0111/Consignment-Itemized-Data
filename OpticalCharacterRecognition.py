@@ -48,7 +48,7 @@ class OCR:
 
             # Additional step to check whether the header is correct detected
             if idx == 0:
-                t1 = temp_df
+                t1 = temp_df[-3:]
                 print(t1)
                 print('t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1')
                 continue
@@ -59,6 +59,7 @@ class OCR:
                 # Amend the 'width' column of the second row and assign the same value to the first row's 'width' column
                 t2.loc[1, 'width'] /= 2
                 t2.loc[0, 'width'] = t2.loc[1, 'width']
+                t2.loc[0, 'left'] = 0
                 t2.loc[1, 'left'] = t2.loc[1, 'width'] + 41
 
                 print(t2)
@@ -69,14 +70,13 @@ class OCR:
                 print('t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3t3')
 
                 if t3.shape[0] != 7:
+                    t2.loc[4, 'left'] = 0
                     t3.loc[4, 'width'] /= 3
 
+                    # Calculate new row data
                     x1 = t3.loc[4, 'left'] + t3.loc[4, 'width'] + 41
-                    w1 = t3.loc[4, 'width'] * 2
+                    w1 = t3.loc[4, 'width'] * 2 - 41
 
-                    # # Calculate new row data
-                    # new_left = prev_row['width'] / 3 * 2 + 41
-                    # new_width = prev_row['width'] / 3 * 2
                     new_row_data = {'left': x1, 'top': t3.loc[4, 'top'], 'width': w1,
                                     'height': t3.loc[4, 'height'], 'conf': t3.loc[4, 'conf'], 'text': ''}
                     new_row_df = pd.DataFrame(new_row_data, index=[0])
@@ -100,12 +100,13 @@ class OCR:
                 temp_df['most_similar_header'], temp_df['similarity_score'] = zip(
                     *temp_df['text'].apply(OCR.find_most_similar_header_and_similarity, header_name=cols_name))
 
+                print(f'temp_df.tail(10): {temp_df.tail(10)}')
+
                 # Filter rows with similarity score less than 50
                 temp_df = temp_df[temp_df['similarity_score'] <= 50]
 
                 # Concatenate the data to the final DataFrame
                 self.df = pd.concat([self.df, temp_df], ignore_index=True)
-
 
             # Draw bounding boxes on the image
             self.drawBoundingBox(img, temp_df)
@@ -113,20 +114,22 @@ class OCR:
 
             bill_list = self.bill.assignCoordinate(temp_df)
             for bill in bill_list:
-                print(f'bill_list: {bill}')
+                print(f'{idx}. bill_list: {bill}')
 
             # Store the bill in tabular format
-            tr = TabularRule(bill_list, True if idx == 0 else False)
+            tr = TabularRule(bill_list, True if idx == 1 else False)
             tr.runner()
             self.table_data_list.append(tr.row_list)
+
+        for iii, billll in enumerate(self.table_data_list):
+            for b in billll:
+                print(f'{iii}. {b}')
 
         # Use list comprehension to create tb_list in a more concise way
         tb_list = [[element.text for element in row] for row in self.table_data_list]
 
-        print()
-        print(f'tb_list 1: \t{tb_list}')
-
         self.cols.append(tb_list[0])
+        print(f'self.cols: {self.cols}')
 
         # Define a regular expression pattern to match the date in the format DD/MM/YYYY
         date_pattern = r'\b\d{2}/\d{2}/\d{4}\b'
@@ -153,7 +156,7 @@ class OCR:
                 # Print the sublist elements separated by commas
 
         print()
-        print(f'tb_list 2: \t{tb_list}')
+        print(f'tb_list: \t{tb_list}')
 
         itemized_data = pd.DataFrame(tb_list[1:], columns=self.cols[0])
 
@@ -243,30 +246,30 @@ class OCR:
             print(f'{df_conf.shape[0]} / {df.shape[0]} = ALL PASS')
 
     # Function to calculate Levenshtein distance
-    @staticmethod
-    def levenshtein_distance(s1, s2):
-        if len(s1) > len(s2):
-            s1, s2 = s2, s1
-
-        distances = range(len(s1) + 1)
-        for i2, c2 in enumerate(s2):
-            distances_ = [i2 + 1]
-            for i1, c1 in enumerate(s1):
-                if c1 == c2:
-                    distances_.append(distances[i1])
-                else:
-                    distances_.append(1 + min((distances[i1], distances[i1 + 1], distances_[-1])))
-            distances = distances_
-        return distances[-1]
-
-    # Function to check similarity using Levenshtein distance
-    @staticmethod
-    def check_similarity(text, header):
-        # Calculate Levenshtein distance between lowercase versions of text and header
-        distance = OCR.levenshtein_distance(text.lower(), header.lower())
-        # Calculate similarity score as a ratio of distance to maximum length
-        similarity_ratio = 1 - (distance / max(len(text), len(header)))
-        return similarity_ratio
+    # @staticmethod
+    # def levenshtein_distance(s1, s2):
+    #     if len(s1) > len(s2):
+    #         s1, s2 = s2, s1
+    #
+    #     distances = range(len(s1) + 1)
+    #     for i2, c2 in enumerate(s2):
+    #         distances_ = [i2 + 1]
+    #         for i1, c1 in enumerate(s1):
+    #             if c1 == c2:
+    #                 distances_.append(distances[i1])
+    #             else:
+    #                 distances_.append(1 + min((distances[i1], distances[i1 + 1], distances_[-1])))
+    #         distances = distances_
+    #     return distances[-1]
+    #
+    # # Function to check similarity using Levenshtein distance
+    # @staticmethod
+    # def check_similarity(text, header):
+    #     # Calculate Levenshtein distance between lowercase versions of text and header
+    #     distance = OCR.levenshtein_distance(text.lower(), header.lower())
+    #     # Calculate similarity score as a ratio of distance to maximum length
+    #     similarity_ratio = 1 - (distance / max(len(text), len(header)))
+    #     return similarity_ratio
 
     # Function to find the most similar header and calculate similarity score using fuzzy matching
     @staticmethod
@@ -302,7 +305,7 @@ class OCR:
 
     @staticmethod
     def KPJAdjustment(data):
-        header_name = ['Price Code', 'Description', 'Trans Date', 'Qty', 'Amount (RM)', 'GST Amount (RM)', 'Payable Amt (RM)']
+        header_name = ['Price Code', 'Description', 'Trans Date', 'Qty', 'Amount (RM)', 'GST/Tax Amount (RM)', 'Payable Amt (RM)']
 
         # Insert the new row at the beginning of the DataFrame
         text_col = pd.DataFrame(header_name, columns=['text'])
