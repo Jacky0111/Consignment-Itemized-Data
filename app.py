@@ -61,6 +61,8 @@ class App:
                 # Detect Table(s)
                 self.cid.tableDetection()
 
+                print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+
                 # Detect Row(s)
                 self.cid.rowDetection()
 
