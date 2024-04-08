@@ -136,10 +136,16 @@ class CID:
         # Read values from the row boxes text file
         with open(table_boxes_path, 'r') as file:
             selected_pages = [int(line.split()[1]) for line in file]
+        print(f'selected_pages: {selected_pages}')
 
         # Create a list of modified image names
-        new_img_list = [img_name + '_crop' for img_name in self.images_list if int(img_name[-1]) in selected_pages]
-        # print(f'new_img_list: {new_img_list}')
+        new_img_list = [img_name + '_crop' for img_name in self.images_list if
+                        int(img_name.split('_')[-1]) in selected_pages]
+        print(f'new_img_list: {new_img_list}')
+
+        # Create "Row" folder
+        os.makedirs(os.path.join(self.output_folder_path, 'Row'), exist_ok=True)
+        row_folder = f'{self.output_folder_path}/Row'
 
         for page, img in zip(selected_pages, new_img_list):
             print(f'page: {page}')
@@ -165,6 +171,31 @@ class CID:
 
             # Sort based on the third value (y) in ascending order
             values.sort(key=lambda j: j[1], reverse=False)
+            print(f'values: {values}')
+
+            prev_y = None
+            prev_h = None
+            limit = 0.01
+            values2 = []
+            for coordinate in values:
+                print(f'coordinate: {coordinate}')
+                x, y, w, h = map(float, coordinate)  # Extract x, y, width, height
+
+                values2.append(coordinate)
+                if prev_y is None:
+                    y = h * 2
+                    new_item = [x, y, w, h]
+                if prev_y is not None:
+                    distance = y - (prev_y + prev_h)
+                    print(f"Distance from previous rectangle: {distance:.6f}")
+                    if distance > limit:
+                        new_item = [x, distance, w, y - distance]
+                        values2.append(new_item)
+
+                print(values2)
+
+                prev_y = y
+                prev_h = h
 
             # Merge rows if y-coordinate difference is less than or equal to the threshold
             merged_row = values[0]
@@ -172,9 +203,9 @@ class CID:
                 current_row = values[idx]
                 prev_row = merged_row
 
-                # print(f'{idx-1}. {prev_row}')
-                # print(f'{idx}. {current_row}')
-                # print(f'Diff: {abs(current_row[1] - prev_row[1])}')
+                print(f'{idx-1}. {prev_row}')
+                print(f'{idx}. {current_row}')
+                print(f'Diff: {abs(current_row[1] - prev_row[1])}')
 
                 if abs(current_row[1] - prev_row[1]) <= threshold:
                     # Merge current row with previous row
@@ -189,7 +220,7 @@ class CID:
                     merged_values.append(merged_row)
                     merged_row = current_row
 
-                # print(f'Merged: {merged_row}')
+                print(f'Merged: {merged_row}')
 
             # Append the last merged row
             merged_values.append(merged_row)
@@ -226,13 +257,13 @@ class CID:
                 if not text:
                     os.remove(cropped_path)
 
-                    # print(f'text: {text}, {bool(text)} {cropped_path}')
+                    print(f'text: {text}, {bool(text)} {cropped_path}')
 
                     # Save the annotated image
             cv2.imwrite(f'{self.output_folder_path}/{img[:-5]}_row_revised.png', tb_img)
 
-            ocr = OCR(self.output_folder_path, row_folder)
-            ocr.runner()
+        ocr = OCR(self.output_folder_path, row_folder)
+        ocr.runner()
 
     def checkRedundantRows(self):
         pass
