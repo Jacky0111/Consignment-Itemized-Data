@@ -100,7 +100,7 @@ class OCR:
                 temp_df['most_similar_header'], temp_df['similarity_score'] = zip(
                     *temp_df['text'].apply(OCR.find_most_similar_header_and_similarity, header_name=cols_name))
 
-                print(f'temp_df.tail(10): {temp_df.tail(10)}')
+                # print(f'temp_df.tail(10): {temp_df.tail(10)}')
 
                 # Filter rows with similarity score less than 50
                 temp_df = temp_df[temp_df['similarity_score'] <= 50]
@@ -129,7 +129,7 @@ class OCR:
         tb_list = [[element.text for element in row] for row in self.table_data_list]
 
         self.cols.append(tb_list[0])
-        print(f'self.cols: {self.cols}')
+        # print(f'self.cols: {self.cols}')
 
         # Define a regular expression pattern to match the date in the format DD/MM/YYYY
         date_pattern = r'\b\d{2}/\d{2}/\d{4}\b'
