@@ -124,7 +124,7 @@ class Detect:
             print(f'annotated_img_name: {annotated_img_name}')
             cv2.imwrite(annotated_img_name, annotated_img)
 
-            # print(f'Image name: {img_name}')
+            print(f'Image name: {img_name}')
 
     '''
     Define the required arguments to command-line interfaces.
