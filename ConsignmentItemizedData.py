@@ -160,6 +160,15 @@ class CID:
             tb_img = cv2.imread(table_img_path)
             crop_img = tb_img.copy()
 
+            # # Check if image loading was successful
+            # if crop_img is None:
+            #     print("Error: Unable to load image.")
+            # else:
+            #     # Display the image
+            #     cv2.imshow('Shoe Image', crop_img)
+            #     cv2.waitKey(0)  # Wait for any key press
+            #     cv2.destroyAllWindows()  # Close all OpenCV windows
+
             # Read values from the row boxes text file
             with open(row_boxes_path, 'r') as file:
                 lines = file.readlines()
@@ -177,30 +186,36 @@ class CID:
             prev_h = None
             limit = 0.01
             values2 = []
-            for coordinate in values:
+            for index, coordinate in enumerate(values):
                 print(f'coordinate: {coordinate}')
                 x, y, w, h = map(float, coordinate)  # Extract x, y, width, height
 
+                # if index == 0:
+                #     y = y - h * 2
+                #     if y < 0:
+                #         h -= y
+                #         y = 0
+                #     new_item = [x, y, w, h]
+                #     values2.append(new_item)
+
                 values2.append(coordinate)
-                if prev_y is None:
-                    y = h * 2
-                    new_item = [x, y, w, h]
+
                 if prev_y is not None:
                     distance = y - (prev_y + prev_h)
                     print(f"Distance from previous rectangle: {distance:.6f}")
                     if distance > limit:
                         new_item = [x, distance, w, y - distance]
-                        values2.append(new_item)
 
-                print(values2)
+                for no, v in enumerate(values2):
+                    print(f'{no+1}. {v}')
 
                 prev_y = y
                 prev_h = h
 
             # Merge rows if y-coordinate difference is less than or equal to the threshold
-            merged_row = values[0]
-            for idx in range(1, len(values)):
-                current_row = values[idx]
+            merged_row = values2[0]
+            for idx in range(1, len(values2)):
+                current_row = values2[idx]
                 prev_row = merged_row
 
                 print(f'{idx-1}. {prev_row}')
@@ -220,7 +235,7 @@ class CID:
                     merged_values.append(merged_row)
                     merged_row = current_row
 
-                print(f'Merged: {merged_row}')
+                # print(f'Merged: {merged_row}')
 
             # Append the last merged row
             merged_values.append(merged_row)
@@ -236,20 +251,40 @@ class CID:
 
             # Convert the format to xywh and draw lines on the image
             for idx, value in enumerate(merged_values):
+                print(f'{idx + 1}. {value}')
                 x, y, w, h = value[0], value[1], value[2], value[3]
                 y = int((y + h / 2) * tb_img.shape[0])
                 w = int(w * tb_img.shape[1])
                 h = int(h * tb_img.shape[0])
+                print(f'{idx + 1}. [{x}, {y}, {w}, {h}]')
+
+                # 0 if y - h < 0 else y - h
 
                 # Draw lines on the image
                 cv2.line(tb_img, (0, y), (tb_img.shape[0] + w, y), (255, 0, 0), 2)
-                cv2.line(tb_img, (0, y - h), (tb_img.shape[0] + w, y - h), (255, 0, 0), 2)
+                cv2.line(tb_img, (0, y + h), (tb_img.shape[0] + w, y + h), (255, 0, 0), 2)
+
+                # Check if image loading was successful
+                if tb_img is None:
+                    print("Error: Unable to load image.")
+                else:
+                    # Display the image
+                    cv2.imshow('Shoe Image', tb_img)
+                    cv2.waitKey(0)  # Wait for any key press
+                    cv2.destroyAllWindows()  # Close all OpenCV windows
+
 
                 # Crop the row based on the coordinates
-                cropped_row = crop_img[y - h:y, 0:crop_img.shape[1]]
+                if int(y) == 0:
+                    cropped_row = crop_img[0:h, 0:crop_img.shape[1]]
+                    print(f'cropped_row: crop_img[0:{h}, 0:{crop_img.shape[1]}]')
+                else:
+                    cropped_row = crop_img[y - h:y, 0:crop_img.shape[1]]
+                print(f'cropped_row: {cropped_row}')
 
                 # Save the cropped row in the 'Row' folder
                 cropped_path = f'{row_folder}/row_{page}_{str(idx).zfill(3)}.png'
+                print(f'cropped_path: {cropped_path}')
                 cv2.imwrite(cropped_path, cropped_row)
                 check_img = cv2.imread(cropped_path)
                 gray = cv2.cvtColor(check_img, cv2.COLOR_BGR2GRAY)
