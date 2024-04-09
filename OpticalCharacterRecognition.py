@@ -96,9 +96,12 @@ class OCR:
 
                 cols_name, temp_df = self.checkHospital(t3.iloc[:, :-1])
             else:
-                # Apply the function to each text in the DataFrame
-                temp_df['most_similar_header'], temp_df['similarity_score'] = zip(
-                    *temp_df['text'].apply(OCR.find_most_similar_header_and_similarity, header_name=cols_name))
+                try:
+                    # Apply the function to each text in the DataFrame
+                    temp_df['most_similar_header'], temp_df['similarity_score'] = zip(
+                        *temp_df['text'].apply(OCR.find_most_similar_header_and_similarity, header_name=cols_name))
+                except ValueError:
+                    continue
 
                 # print(f'temp_df.tail(10): {temp_df.tail(10)}')
 
@@ -157,6 +160,8 @@ class OCR:
 
         print()
         print(f'tb_list: \t{tb_list}')
+
+        print(f'self.cols[0]: {self.cols[0]}')
 
         itemized_data = pd.DataFrame(tb_list[1:], columns=self.cols[0])
 
