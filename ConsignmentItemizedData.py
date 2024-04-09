@@ -160,15 +160,6 @@ class CID:
             tb_img = cv2.imread(table_img_path)
             crop_img = tb_img.copy()
 
-            # # Check if image loading was successful
-            # if crop_img is None:
-            #     print("Error: Unable to load image.")
-            # else:
-            #     # Display the image
-            #     cv2.imshow('Shoe Image', crop_img)
-            #     cv2.waitKey(0)  # Wait for any key press
-            #     cv2.destroyAllWindows()  # Close all OpenCV windows
-
             # Read values from the row boxes text file
             with open(row_boxes_path, 'r') as file:
                 lines = file.readlines()
@@ -190,13 +181,10 @@ class CID:
                 print(f'coordinate: {coordinate}')
                 x, y, w, h = map(float, coordinate)  # Extract x, y, width, height
 
-                # if index == 0:
-                #     y = y - h * 2
-                #     if y < 0:
-                #         h -= y
-                #         y = 0
-                #     new_item = [x, y, w, h]
-                #     values2.append(new_item)
+                if index == 0:
+                    new_y = y / 10
+                    new_item = [x, new_y, w, new_y * 9]
+                    values2.append(new_item)
 
                 values2.append(coordinate)
 
@@ -204,7 +192,8 @@ class CID:
                     distance = y - (prev_y + prev_h)
                     print(f"Distance from previous rectangle: {distance:.6f}")
                     if distance > limit:
-                        new_item = [x, distance, w, y - distance]
+                        new_item = [x, prev_y + prev_h, w, distance]
+                        values2.append(new_item)
 
                 for no, v in enumerate(values2):
                     print(f'{no+1}. {v}')
@@ -218,9 +207,9 @@ class CID:
                 current_row = values2[idx]
                 prev_row = merged_row
 
-                print(f'{idx-1}. {prev_row}')
-                print(f'{idx}. {current_row}')
-                print(f'Diff: {abs(current_row[1] - prev_row[1])}')
+                # print(f'{idx-1}. {prev_row}')
+                # print(f'{idx}. {current_row}')
+                # print(f'Diff: {abs(current_row[1] - prev_row[1])}')
 
                 if abs(current_row[1] - prev_row[1]) <= threshold:
                     # Merge current row with previous row
@@ -262,29 +251,34 @@ class CID:
 
                 # Draw lines on the image
                 cv2.line(tb_img, (0, y), (tb_img.shape[0] + w, y), (255, 0, 0), 2)
-                cv2.line(tb_img, (0, y + h), (tb_img.shape[0] + w, y + h), (255, 0, 0), 2)
+                cv2.line(tb_img, (0, 0 if y - h < 0 else y - h), (tb_img.shape[0] + w, 0 if y - h < 0 else y - h), (255, 0, 0), 2)
+                # cv2.line(tb_img, (0, y - h), (tb_img.shape[0] + w, y - h), (255, 0, 0), 2)
 
-                # Check if image loading was successful
-                if tb_img is None:
-                    print("Error: Unable to load image.")
-                else:
-                    # Display the image
-                    cv2.imshow('Shoe Image', tb_img)
-                    cv2.waitKey(0)  # Wait for any key press
-                    cv2.destroyAllWindows()  # Close all OpenCV windows
-
+                # # Check if image loading was successful
+                # if tb_img is None:
+                #     print("Error: Unable to load image.")
+                # else:
+                #     # Get the screen resolution
+                #     screen_width, screen_height = 1366, 768  # Update with your screen resolution
+                #
+                #     # Resize the image to fit the screen
+                #     resized_image = cv2.resize(tb_img, (screen_width, screen_height))
+                #
+                #     # Display the resized image
+                #     cv2.imshow('Shoe Image', resized_image)
+                #     cv2.waitKey(0)  # Wait for any key press
+                #     cv2.destroyAllWindows()  # Close all OpenCV windows
 
                 # Crop the row based on the coordinates
-                if int(y) == 0:
-                    cropped_row = crop_img[0:h, 0:crop_img.shape[1]]
-                    print(f'cropped_row: crop_img[0:{h}, 0:{crop_img.shape[1]}]')
-                else:
-                    cropped_row = crop_img[y - h:y, 0:crop_img.shape[1]]
-                print(f'cropped_row: {cropped_row}')
+                # cropped_row = crop_img[y - h:y, 0:crop_img.shape[1]]
+                # print(f'cropped_row: crop_img[{y - h}:{y}, 0:{crop_img.shape[1]}]')
+
+                cropped_row = crop_img[0 if y - h < 0 else y - h:y, 0:crop_img.shape[1]]
+                print(f'cropped_row: crop_img[{0 if y - h < 0 else y - h}:{y}, 0:{crop_img.shape[1]}]')
 
                 # Save the cropped row in the 'Row' folder
                 cropped_path = f'{row_folder}/row_{page}_{str(idx).zfill(3)}.png'
-                print(f'cropped_path: {cropped_path}')
+                # print(f'cropped_path: {cropped_path}')
                 cv2.imwrite(cropped_path, cropped_row)
                 check_img = cv2.imread(cropped_path)
                 gray = cv2.cvtColor(check_img, cv2.COLOR_BGR2GRAY)
