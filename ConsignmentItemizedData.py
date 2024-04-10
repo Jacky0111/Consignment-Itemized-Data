@@ -1,7 +1,6 @@
 # Empowers the end user to make choices between performing document conversion and optical character recognition (OCR)
 
 import os
-import re
 import cv2
 import glob
 import shutil
@@ -11,7 +10,6 @@ from datetime import datetime
 from deskew import determine_skew
 from pdf2image import convert_from_path
 
-from skimage import io
 from skimage.color import rgb2gray
 from skimage.transform import rotate
 
@@ -136,12 +134,12 @@ class CID:
         # Read values from the row boxes text file
         with open(table_boxes_path, 'r') as file:
             selected_pages = [int(line.split()[1]) for line in file]
-        print(f'selected_pages: {selected_pages}')
+        # print(f'selected_pages: {selected_pages}')
 
         # Create a list of modified image names
         new_img_list = [img_name + '_crop' for img_name in self.images_list if
                         int(img_name.split('_')[-1]) in selected_pages]
-        print(f'new_img_list: {new_img_list}')
+        # print(f'new_img_list: {new_img_list}')
 
         # Create "Row" folder
         os.makedirs(os.path.join(self.output_folder_path, 'Row'), exist_ok=True)
@@ -247,38 +245,16 @@ class CID:
                 h = int(h * tb_img.shape[0])
                 print(f'{idx + 1}. [{x}, {y}, {w}, {h}]')
 
-                # 0 if y - h < 0 else y - h
-
                 # Draw lines on the image
                 cv2.line(tb_img, (0, y), (tb_img.shape[0] + w, y), (255, 0, 0), 2)
                 cv2.line(tb_img, (0, 0 if y - h < 0 else y - h), (tb_img.shape[0] + w, 0 if y - h < 0 else y - h), (255, 0, 0), 2)
-                # cv2.line(tb_img, (0, y - h), (tb_img.shape[0] + w, y - h), (255, 0, 0), 2)
-
-                # # Check if image loading was successful
-                # if tb_img is None:
-                #     print("Error: Unable to load image.")
-                # else:
-                #     # Get the screen resolution
-                #     screen_width, screen_height = 1366, 768  # Update with your screen resolution
-                #
-                #     # Resize the image to fit the screen
-                #     resized_image = cv2.resize(tb_img, (screen_width, screen_height))
-                #
-                #     # Display the resized image
-                #     cv2.imshow('Shoe Image', resized_image)
-                #     cv2.waitKey(0)  # Wait for any key press
-                #     cv2.destroyAllWindows()  # Close all OpenCV windows
 
                 # Crop the row based on the coordinates
-                # cropped_row = crop_img[y - h:y, 0:crop_img.shape[1]]
-                # print(f'cropped_row: crop_img[{y - h}:{y}, 0:{crop_img.shape[1]}]')
-
                 cropped_row = crop_img[0 if y - h < 0 else y - h:y, 0:crop_img.shape[1]]
                 print(f'cropped_row: crop_img[{0 if y - h < 0 else y - h}:{y}, 0:{crop_img.shape[1]}]')
 
                 # Save the cropped row in the 'Row' folder
                 cropped_path = f'{row_folder}/row_{page}_{str(idx).zfill(3)}.png'
-                # print(f'cropped_path: {cropped_path}')
                 cv2.imwrite(cropped_path, cropped_row)
                 check_img = cv2.imread(cropped_path)
                 gray = cv2.cvtColor(check_img, cv2.COLOR_BGR2GRAY)
