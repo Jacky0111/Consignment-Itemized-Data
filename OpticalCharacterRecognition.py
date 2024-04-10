@@ -103,8 +103,6 @@ class OCR:
                 except ValueError:
                     continue
 
-                # print(f'temp_df.tail(10): {temp_df.tail(10)}')
-
                 # Filter rows with similarity score less than 50
                 temp_df = temp_df[temp_df['similarity_score'] <= 50]
 
@@ -124,15 +122,10 @@ class OCR:
             tr.runner()
             self.table_data_list.append(tr.row_list)
 
-        for iii, billll in enumerate(self.table_data_list):
-            for b in billll:
-                print(f'{iii}. {b}')
-
         # Use list comprehension to create tb_list in a more concise way
         tb_list = [[element.text for element in row] for row in self.table_data_list]
 
         self.cols.append(tb_list[0])
-        # print(f'self.cols: {self.cols}')
 
         # Define a regular expression pattern to match the date in the format DD/MM/YYYY
         date_pattern = r'\b\d{2}/\d{2}/\d{4}\b'
@@ -250,32 +243,6 @@ class OCR:
         except ZeroDivisionError:
             print(f'{df_conf.shape[0]} / {df.shape[0]} = ALL PASS')
 
-    # Function to calculate Levenshtein distance
-    # @staticmethod
-    # def levenshtein_distance(s1, s2):
-    #     if len(s1) > len(s2):
-    #         s1, s2 = s2, s1
-    #
-    #     distances = range(len(s1) + 1)
-    #     for i2, c2 in enumerate(s2):
-    #         distances_ = [i2 + 1]
-    #         for i1, c1 in enumerate(s1):
-    #             if c1 == c2:
-    #                 distances_.append(distances[i1])
-    #             else:
-    #                 distances_.append(1 + min((distances[i1], distances[i1 + 1], distances_[-1])))
-    #         distances = distances_
-    #     return distances[-1]
-    #
-    # # Function to check similarity using Levenshtein distance
-    # @staticmethod
-    # def check_similarity(text, header):
-    #     # Calculate Levenshtein distance between lowercase versions of text and header
-    #     distance = OCR.levenshtein_distance(text.lower(), header.lower())
-    #     # Calculate similarity score as a ratio of distance to maximum length
-    #     similarity_ratio = 1 - (distance / max(len(text), len(header)))
-    #     return similarity_ratio
-
     # Function to find the most similar header and calculate similarity score using fuzzy matching
     @staticmethod
     def find_most_similar_header_and_similarity(text, header_name):
@@ -310,21 +277,21 @@ class OCR:
 
     @staticmethod
     def KPJAdjustment(data):
-        header_name = ['Price Code', 'Description', 'Trans Date', 'Qty', 'Amount (RM)', 'GST/Tax Amount (RM)', 'Payable Amt (RM)']
+        header_name = ['Price Code',
+                       'Description',
+                       'Trans Date',
+                       'Qty',
+                       'Amount (RM)',
+                       'GST/Tax Amount (RM)',
+                       'Payable Amt (RM)']
 
         # Insert the new row at the beginning of the DataFrame
         text_col = pd.DataFrame(header_name, columns=['text'])
 
         data = pd.concat([data, text_col], axis=1)
 
-        print(data)
-        print('1111111111111111111111111111111111111111111111111111111')
-
         return header_name, data
 
     @staticmethod
     def RSHAdjustment(data):
         return
-
-
-
