@@ -29,9 +29,6 @@ def renameBills(location, filtered, code):
         old_path = os.path.join(location, f'{file_name}.pdf')
         new_path = os.path.join(location, f'{file_name}_{code}.pdf')
 
-        # print(f'old_path: {old_path}')
-        # print(f'new_path: {new_path}')
-
         try:
             os.rename(old_path, new_path)
         except FileNotFoundError:
