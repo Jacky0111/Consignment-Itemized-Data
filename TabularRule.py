@@ -207,12 +207,3 @@ class TabularRule:
     @staticmethod
     def rule6(dist):
         return dist > 40
-
-    '''
-    Rule 7: For KPJ hospital bill, add "Item" as the first column name.
-    @param dist: A integer representing the distance.
-    @return True if rule is applied, False otherwise.
-    '''
-    @staticmethod
-    def rule7(dist):
-        return dist > 40
