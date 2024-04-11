@@ -11,6 +11,7 @@ from TabularRule import TabularRule
 
 class OCR:
     bill = None
+    claim_no = None
     output_path = None  # Current save path
     images_path = None  # Input images path
 
@@ -20,9 +21,10 @@ class OCR:
     cols = []
     table_data_list = []
 
-    def __init__(self, output_path, images_path):
+    def __init__(self, output_path, images_path, claim_no):
         self.bill = Bill()
         self.table_data_list.clear()
+        self.claim_no = claim_no
         self.output_path = output_path
         self.images_path = images_path
 
@@ -157,6 +159,7 @@ class OCR:
         print(f'self.cols[0]: {self.cols[0]}')
 
         itemized_data = pd.DataFrame(tb_list[1:], columns=self.cols[0])
+        itemized_data.insert(0, 'ClaimNo')
 
         self.saveToExcel(self.df, 'image_to_data')
         self.saveToExcel(itemized_data, 'itemized_data')
@@ -289,6 +292,7 @@ class OCR:
         text_col = pd.DataFrame(header_name, columns=['text'])
 
         data = pd.concat([data, text_col], axis=1)
+        print(data)
 
         return header_name, data
 
