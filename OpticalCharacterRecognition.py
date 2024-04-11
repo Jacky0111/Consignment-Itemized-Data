@@ -32,10 +32,12 @@ class OCR:
     '--oem 3' uses default LSTM OCR engine mode.
     '--psm 4' represents the Page Segmentation Mode and 4 assumes a single column of text.
     '''
+
     def runner(self):
         t1 = 0
         t2 = 0
         t3 = 0
+        status = True
 
         # Loop through all images
         for idx, file in enumerate(os.listdir(self.images_path)):
@@ -49,12 +51,17 @@ class OCR:
             temp_df = temp_df.sort_values(by='left', ascending=True)
 
             # Additional step to check whether the header is correct detected
-            if idx == 0:
+            if idx == 0 or (idx == 1 and status is False):
+                status = False
+                if temp_df.empty:
+                    continue
+
                 t1 = temp_df[-3:]
                 print(t1)
                 print('t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1')
                 continue
-            elif idx == 1:
+
+            elif idx == 1 or (idx == 2 and status is False):
                 t2 = temp_df.iloc[:3]
                 t2 = pd.concat([t2.iloc[:1], t2]).reset_index(drop=True)
 
@@ -159,15 +166,28 @@ class OCR:
         print(f'self.cols[0]: {self.cols[0]}')
 
         itemized_data = pd.DataFrame(tb_list[1:], columns=self.cols[0])
-        itemized_data.insert(0, 'ClaimNo')
+        itemized_data.insert(0, 'ClaimNo', self.claim_no * len(itemized_data))
+
+        df_temp = pd.read_excel(r'claim_data.xlsx')
+        # Get the PolicyNo from the matching row
+        # Find the row where ClaimNo is equal to 'ALMCIP02180441'
+        matching_row = df_temp[df_temp['ClaimNo'] == 'ALMCIP05210168']
+        # Get the PolicyNo from the matching row
+        policy_number = matching_row['PolicyNo'].iloc[0] if not matching_row.empty else None
+        print(f'Type: {type(policy_number)}')
+
+        itemized_data.insert(0, 'PolicyNo', policy_number)
 
         self.saveToExcel(self.df, 'image_to_data')
         self.saveToExcel(itemized_data, 'itemized_data')
+
+        self.saveToCSV(itemized_data, 'itemized_data')
 
     '''
     Saved recognized text to csv file
     @param path
     '''
+
     def saveToCSV(self, data, name):
         data.to_csv(f'{self.output_path}/{name}.csv', index=False)
 
@@ -175,6 +195,7 @@ class OCR:
     Saved recognized text to xlsx file
     @param path
     '''
+
     def saveToExcel(self, data, name):
         data.to_excel(f'{self.output_path}/{name}.xlsx', index=False)
 
@@ -184,6 +205,7 @@ class OCR:
     @param config
     @return data, df
     '''
+
     @staticmethod
     def imageToData(img):
         # paddle = PaddleOCR(use_angle_cls=True, lang='en')
@@ -235,6 +257,7 @@ class OCR:
     Check whether the confidence scores of the image is high enough in order to determine native and non-native pdf
     @param df
     '''
+
     @staticmethod
     def checkConfidenceScore(df):
         df_conf = df.loc[(df['conf'] > 0) & (df['conf'] <= 70)]
