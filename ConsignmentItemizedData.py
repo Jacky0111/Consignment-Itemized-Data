@@ -22,10 +22,12 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tessera
 
 
 class CID:
-    images_list = []
+    claim_no = None
     images_path = None
     dataset_path = None
     output_folder_path = None
+
+    images_list = []
 
     def __init__(self):
         self.images_list = []
@@ -128,7 +130,7 @@ class CID:
         for img in self.images_list:
             Detect.parseOpt(self.output_folder_path, img, 'table.pt', 0.7)
 
-    def rowDetection(self):
+    def rowDetection(self, claim_no):
         table_boxes_path = f'{self.output_folder_path}/labels/table_boxes.txt'
 
         # Read values from the row boxes text file
@@ -267,7 +269,7 @@ class CID:
                     # Save the annotated image
             cv2.imwrite(f'{self.output_folder_path}/{img[:-5]}_row_revised.png', tb_img)
 
-        ocr = OCR(self.output_folder_path, row_folder)
+        ocr = OCR(self.output_folder_path, row_folder, claim_no)
         ocr.runner()
 
     def checkRedundantRows(self):
