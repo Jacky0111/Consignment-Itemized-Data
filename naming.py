@@ -58,7 +58,7 @@ if __name__ == "__main__":
     file_names = getFileNames(path)
 
     # Step 2: Read "KPJ" sheet from Excel file into DataFrame
-    df = pd.read_excel(excel_file_path, sheet_name=hosp_code[0])
+    df = pd.read_excel(excel_file_path, sheet_name=hosp_code[3])
 
     # Step 3: Remove "-2" suffix from file names
     file_names = removeSuffix(file_names)
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     print(f'Length: {len(filtered_list)}')
 
     # Step 5: Rename PDF files with "_KPJ" suffix
-    renameBills(path, filtered_list, hosp_code[0])
+    renameBills(path, filtered_list, hosp_code[3])
 
     # Step 6: Copy selected PDF files to "KPJ" folder
-    copyFileToFolder(path, filtered_list, hosp_code[0])
+    copyFileToFolder(path, filtered_list, hosp_code[3])
