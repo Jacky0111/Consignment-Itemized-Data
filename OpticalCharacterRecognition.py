@@ -51,7 +51,7 @@ class OCR:
             temp_df = temp_df.sort_values(by='left', ascending=True)
 
             # Additional step to check whether the header is correct detected
-            if idx == 0 or (idx == 1 and status is False):
+            if idx == 0:
                 status = False
                 if temp_df.empty:
                     continue
@@ -61,7 +61,7 @@ class OCR:
                 print('t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1t1')
                 continue
 
-            elif idx == 1 or (idx == 2 and status is False):
+            elif idx == 1:
                 t2 = temp_df.iloc[:3]
                 t2 = pd.concat([t2.iloc[:1], t2]).reset_index(drop=True)
 
@@ -176,9 +176,10 @@ class OCR:
         policy_number = matching_row['PolicyNo'].iloc[0] if not matching_row.empty else None
         print(f'Type: {type(policy_number)}')
 
+        self.saveToExcel(self.df, 'image_to_data')
+
         itemized_data.insert(0, 'PolicyNo', policy_number)
 
-        self.saveToExcel(self.df, 'image_to_data')
         self.saveToExcel(itemized_data, 'itemized_data')
 
         self.saveToCSV(itemized_data, 'itemized_data')
