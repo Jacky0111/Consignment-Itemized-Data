@@ -3,6 +3,7 @@
 /model
 /output
 /runs
+/Run Data
 naming.py
 revise.py
 requirements.txt
