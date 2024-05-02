@@ -1,7 +1,7 @@
 import os
-from ultralytics import YOLO
 
-def rename_files_in_path(path, new_prefix):
+
+def rename_files_in_path(path):
     # Change the current working directory to the specified path
     os.chdir(path)
 
@@ -11,7 +11,7 @@ def rename_files_in_path(path, new_prefix):
     # Rename each file in the directory
     for old_name in files:
         # Check if the file name ends with "_KPJ"
-        if old_name.endswith("_KPJ.pdf"):
+        if old_name.endswith("_ANS.pdf"):
             # Construct the new file name without the "_KPJ" suffix
             new_name = old_name[:-8] + ".pdf"
 
@@ -22,10 +22,7 @@ def rename_files_in_path(path, new_prefix):
 
 if __name__ == "__main__":
     # Specify the path to the directory containing the files
-    directory_path = "C:/Bill/KPJ"
-
-    # Specify the new prefix for the files
-    new_prefix = "new_prefix"
+    directory_path = "D:/Bill/ANS"
 
     # Call the function to rename files in the specified path
-    rename_files_in_path(directory_path, new_prefix)
+    rename_files_in_path(directory_path)
