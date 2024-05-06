@@ -272,8 +272,8 @@ class CID:
 
             ocr = OCR(self.output_folder_path, row_folder, claim_no)
             ocr.runner()
-        except (FileNotFoundError, TypeError, KeyError, ValueError):
-            pass
+        except (FileNotFoundError, TypeError, KeyError, ValueError) as e:
+            print(f'Error: {e}')
 
     def checkRedundantRows(self):
         pass
