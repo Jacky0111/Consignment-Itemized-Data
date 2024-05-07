@@ -10,7 +10,7 @@ if not os.path.exists(destination_folder):
     os.makedirs(destination_folder)
 
 # Read the Excel file
-df = pd.read_excel(excel_file_path)
+df = pd.read_excel(excel_file_path) 
 
 # Get a list of filenames in the destination folder
 files_in_destination = os.listdir(destination_folder)
