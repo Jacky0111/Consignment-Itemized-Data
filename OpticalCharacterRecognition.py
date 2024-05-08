@@ -15,7 +15,6 @@ class OCR:
     output_path = None  # Current save path
     images_path = None  # Input images path
 
-    counter = 0
     df = pd.DataFrame()
 
     cols = []
@@ -32,7 +31,6 @@ class OCR:
     '--oem 3' uses default LSTM OCR engine mode.
     '--psm 4' represents the Page Segmentation Mode and 4 assumes a single column of text.
     '''
-
     def runner(self):
         t1 = 0
         t2 = 0
