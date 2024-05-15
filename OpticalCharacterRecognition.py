@@ -36,13 +36,23 @@ class OCR:
         t2 = 0
         t3 = 0
         status = True
+        cols_name = None
+        img_file_list = []
+
+        for img_file in os.listdir(self.images_path):
+            if not img_file.startswith('._'):
+                img_file_list.append(img_file)
 
         # Loop through all images
-        for idx, file in enumerate(os.listdir(self.images_path)):
+        for idx, file in enumerate(img_file_list):
+            print(idx+1, file)
             # Construct the full path of the current image file
             img_path = os.path.join(self.images_path, file)
+            print(f'file: {file}')
+            print(f'self.images_path: {self.images_path}')
             print(f'img_path: {img_path}')
             img = cv2.imread(img_path)
+            print(f'img_path: {type(img_path)}')
 
             # Process the image using the imageToData method
             temp_df = self.imageToData(img)
