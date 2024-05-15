@@ -270,6 +270,10 @@ class CID:
                         # Save the annotated image
                 cv2.imwrite(f'{self.output_folder_path}/{img[:-5]}_row_revised.png', tb_img)
 
+            print(f'self.output_folder_path: {self.output_folder_path}, {type(self.output_folder_path)}')
+            print(f'row_folder: {row_folder}, {type(row_folder)}')
+            print(f'claim_no: {claim_no}, {type(claim_no)}')
+
             ocr = OCR(self.output_folder_path, row_folder, claim_no)
             ocr.runner()
         except (FileNotFoundError, TypeError, KeyError, ValueError) as e:
