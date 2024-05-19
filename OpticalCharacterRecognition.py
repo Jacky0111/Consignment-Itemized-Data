@@ -191,7 +191,7 @@ class OCR:
                 print(f'max_columns_in_data: {max_columns}')
                 # If the number of columns in headers is less than the number of columns in any data row, add None or ''
                 print(f'Before: {tb_list[1]}')
-                tb_list[1].extend([None] * (max_columns - max_columns))
+                tb_list[1].extend([None] * (num_columns_in_data - max_columns))
                 # Print adjusted columns to check
                 print("Adjusted Columns:", tb_list[1])
                 # Convert data to DataFrame
