@@ -27,6 +27,8 @@ class OCR:
         self.output_path = output_path
         self.images_path = images_path
 
+        # print(f'self.output_path: {self.output_path}')
+
     '''
     '--oem 3' uses default LSTM OCR engine mode.
     '--psm 4' represents the Page Segmentation Mode and 4 assumes a single column of text.
@@ -173,24 +175,65 @@ class OCR:
 
         print(f'self.cols[0]: {self.cols[0]}')
 
-        itemized_data = pd.DataFrame(tb_list[1:], columns=self.cols[0])
+        print('1111111111111111111111111111111111111111111111111111111')
+        try:
+            itemized_data = pd.DataFrame(tb_list[1:], columns=self.cols[0])
+        except ValueError as e:
+            print(f"ValueError occurred: {e}")
+            numbers = re.findall(r'\d+', str(e))
+            print(f'numbers: {numbers}')
+
+            if numbers[0] > numbers[1]:
+                print(f'numbers[0] > numbers[1]: {numbers[0] > numbers[1]}')
+                num_columns_in_data = len(tb_list[0])
+                print(f'num_columns: {num_columns_in_data}')
+                max_columns = len(tb_list[1])
+                print(f'max_columns_in_data: {max_columns}')
+                # If the number of columns in headers is less than the number of columns in any data row, add None or ''
+                print(f'Before: {tb_list[1]}')
+                tb_list[1].extend([None] * (max_columns - max_columns))
+                # Print adjusted columns to check
+                print("Adjusted Columns:", tb_list[1])
+                # Convert data to DataFrame
+                itemized_data = pd.DataFrame(tb_list[1:], columns=tb_list[0])
+            elif numbers[1] < numbers[0]:
+                print(f'numbers[1] > numbers[0]: {numbers[1] > numbers[0]}')
+                num_columns = len(tb_list[0])
+                print(f'num_columns: {num_columns}')
+                max_columns_in_data = max(len(row) for row in tb_list[1:])
+                print(f'max_columns_in_data: {max_columns_in_data}')
+                # If the number of columns in headers is less than the number of columns in any data row, add None or ''
+                print(f'Before: {tb_list[0]}')
+                tb_list[0].extend([None] * (max_columns_in_data - num_columns))
+                # Print adjusted columns to check
+                print("Adjusted Columns:", tb_list[0])
+                # Convert data to DataFrame
+                itemized_data = pd.DataFrame(tb_list[1:], columns=tb_list[0])
+
+
         itemized_data.insert(0, 'ClaimNo', self.claim_no * len(itemized_data))
+        print('22222222222222222222222222222222222222222222222222222222')
+        print(f'self.claim_no: {self.claim_no}')
 
         df_temp = pd.read_excel(r'claim_data.xlsx')
         # Get the PolicyNo from the matching row
         # Find the row where ClaimNo is equal to 'ALMCIP02180441'
-        matching_row = df_temp[df_temp['ClaimNo'] == 'ALMCIP05210168']
+        matching_row = df_temp[df_temp['ClaimNo'] == self.claim_no[0]]
         # Get the PolicyNo from the matching row
         policy_number = matching_row['PolicyNo'].iloc[0] if not matching_row.empty else None
         print(f'Type: {type(policy_number)}')
+
+        print('33333333333333333333333333333333333333333333333333333333333333')
 
         self.saveToExcel(self.df, 'image_to_data')
 
         itemized_data.insert(0, 'PolicyNo', policy_number)
 
+        print('44444444444444444444444444444444444444444444444444444')
+
         self.saveToExcel(itemized_data, 'itemized_data')
 
-        self.saveToCSV(itemized_data, 'itemized_data')
+        # self.saveToCSV(itemized_data, 'itemized_data')
 
     '''
     Saved recognized text to csv file
@@ -198,6 +241,7 @@ class OCR:
     '''
 
     def saveToCSV(self, data, name):
+        print(f'{self.output_path}/{name}.csv')
         data.to_csv(f'{self.output_path}/{name}.csv', index=False)
 
     '''
@@ -206,6 +250,7 @@ class OCR:
     '''
 
     def saveToExcel(self, data, name):
+        print(f'{self.output_path}/{name}.xlsx')
         data.to_excel(f'{self.output_path}/{name}.xlsx', index=False)
 
     '''
