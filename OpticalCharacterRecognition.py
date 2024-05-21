@@ -33,7 +33,12 @@ class OCR:
     '--oem 3' uses default LSTM OCR engine mode.
     '--psm 4' represents the Page Segmentation Mode and 4 assumes a single column of text.
     '''
+
     def runner(self):
+        print(f'self.images_path: {self.images_path}')
+        print(f'self.claim_no: {self.claim_no}')
+        print()
+        print()
         t1 = 0
         t2 = 0
         t3 = 0
@@ -45,9 +50,11 @@ class OCR:
             if not img_file.startswith('._'):
                 img_file_list.append(img_file)
 
+        img_file_list = sorted(img_file_list, key=OCR.extract_numbers)
+
         # Loop through all images
         for idx, file in enumerate(img_file_list):
-            print(idx+1, file)
+            print(idx + 1, file)
             # Construct the full path of the current image file
             img_path = os.path.join(self.images_path, file)
             print(f'file: {file}')
@@ -74,6 +81,7 @@ class OCR:
             elif idx == 1:
                 t2 = temp_df.iloc[:3]
                 t2 = pd.concat([t2.iloc[:1], t2]).reset_index(drop=True)
+                print(t2)
 
                 # Amend the 'width' column of the second row and assign the same value to the first row's 'width' column
                 t2.loc[1, 'width'] /= 2
@@ -175,7 +183,6 @@ class OCR:
 
         print(f'self.cols[0]: {self.cols[0]}')
 
-        print('1111111111111111111111111111111111111111111111111111111')
         try:
             itemized_data = pd.DataFrame(tb_list[1:], columns=self.cols[0])
         except ValueError as e:
@@ -192,11 +199,8 @@ class OCR:
                 # If the number of columns in headers is less than the number of columns in any data row, add None or ''
                 print(f'Before: {tb_list[1]}')
                 tb_list[1].extend([None] * (num_columns_in_data - max_columns))
-                # Print adjusted columns to check
-                print("Adjusted Columns:", tb_list[1])
-                # Convert data to DataFrame
-                itemized_data = pd.DataFrame(tb_list[1:], columns=tb_list[0])
-            elif numbers[1] < numbers[0]:
+
+            elif numbers[0] < numbers[1]:
                 print(f'numbers[1] > numbers[0]: {numbers[1] > numbers[0]}')
                 num_columns = len(tb_list[0])
                 print(f'num_columns: {num_columns}')
@@ -205,14 +209,12 @@ class OCR:
                 # If the number of columns in headers is less than the number of columns in any data row, add None or ''
                 print(f'Before: {tb_list[0]}')
                 tb_list[0].extend([None] * (max_columns_in_data - num_columns))
-                # Print adjusted columns to check
-                print("Adjusted Columns:", tb_list[0])
-                # Convert data to DataFrame
-                itemized_data = pd.DataFrame(tb_list[1:], columns=tb_list[0])
 
-
+        # Print adjusted columns to check
+        print("Adjusted Columns:", tb_list[0])
+        # Convert data to DataFrame
+        itemized_data = pd.DataFrame(tb_list[1:], columns=tb_list[0])
         itemized_data.insert(0, 'ClaimNo', self.claim_no * len(itemized_data))
-        print('22222222222222222222222222222222222222222222222222222222')
         print(f'self.claim_no: {self.claim_no}')
 
         df_temp = pd.read_excel(r'claim_data.xlsx')
@@ -223,17 +225,13 @@ class OCR:
         policy_number = matching_row['PolicyNo'].iloc[0] if not matching_row.empty else None
         print(f'Type: {type(policy_number)}')
 
-        print('33333333333333333333333333333333333333333333333333333333333333')
-
         self.saveToExcel(self.df, 'image_to_data')
 
         itemized_data.insert(0, 'PolicyNo', policy_number)
 
-        print('44444444444444444444444444444444444444444444444444444')
+        # self.saveToExcel(itemized_data, 'itemized_data')
 
-        self.saveToExcel(itemized_data, 'itemized_data')
-
-        # self.saveToCSV(itemized_data, 'itemized_data')
+        self.saveToCSV(itemized_data, 'itemized_data')
 
     '''
     Saved recognized text to csv file
@@ -376,3 +374,11 @@ class OCR:
     @staticmethod
     def RSHAdjustment(data):
         return
+
+    @staticmethod
+    # Function to extract numbers and convert to a tuple of integers for sorting
+    def extract_numbers(s):
+        match = re.search(r'row_(\d+)_(\d+).png', s)
+        if match:
+            return int(match.group(1)), int(match.group(2))
+        return 0, 0  # Default value in case of no match
