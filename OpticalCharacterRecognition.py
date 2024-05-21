@@ -201,7 +201,7 @@ class OCR:
                 tb_list[1].extend([None] * (num_columns_in_data - max_columns))
 
             elif numbers[0] < numbers[1]:
-                print(f'numbers[1] > numbers[0]: {numbers[1] > numbers[0]}')
+                print(f'numbers[0] < numbers[1]: {numbers[0] < numbers[1]}')
                 num_columns = len(tb_list[0])
                 print(f'num_columns: {num_columns}')
                 max_columns_in_data = max(len(row) for row in tb_list[1:])
