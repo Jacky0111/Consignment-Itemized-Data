@@ -100,5 +100,5 @@ for result, rf in zip(result_directories, row_folder_list):
     print(f'claim_no: {claim_no}')
     ocr = OCR(result, rf, [claim_no])
     ocr.runner()
-    break
+
 
