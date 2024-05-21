@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from OpticalCharacterRecognition import OCR
 
+
 def check_folders(directory, result_list):
     """
     Recursively traverse through the directory and its subdirectories,
@@ -23,6 +24,7 @@ def check_folders(directory, result_list):
             selected_items.extend(check_folders(item_path, result_list))
     return selected_items
 
+
 # Define the path to the directory
 directory = r'D:\Archive\Sample_201-250'
 
@@ -37,14 +39,20 @@ print("Directories containing both 'labels' and 'Row' folders, but not containin
 for i, directory_path in enumerate(result_directories, start=1):
     print(f"{i}. {directory_path}")
 
+row_folder_list = []
 # Phase 2
 print("\nPhase 2 - Reading 'Row' images that start with 'row_' and 'labels' files that start with 'row_boxes_'...")
 for directory_path in result_directories:
     row_folder = os.path.join(directory_path, 'Row')
+    row_folder_list.append(row_folder)
+    print(f'row_folder: {row_folder}, {type(row_folder)}')
+
     labels_folder = os.path.join(directory_path, 'labels')
     if os.path.exists(row_folder):
         print(f"\nReading images from 'Row' folder: {row_folder}:")
         row_images = [filename for filename in os.listdir(row_folder) if filename.startswith('row_') and os.path.isfile(os.path.join(row_folder, filename))]
+        # image_files = sorted([f for f in files if f.endswith('.png')], key=natural_sort_key)
+
         if row_images:
             for i, image in enumerate(row_images, start=1):
                 print(f"{i}. {image}")
@@ -75,9 +83,9 @@ for directory_path in result_directories:
                     for j, line in enumerate(content, start=1):
                         values = line.strip().split()
                         label_data.append((j, values[0], [float(val) for val in values[1:]]))
-                    print("Label data:")
-                    for row_num, page, coords in label_data:
-                        print(f"{row_num}. Page: {page}, Coordinates: {coords}")
+                    # print("Label data:")
+                    # for row_num, page, coords in label_data:
+                    #     print(f"{row_num}. Page: {page}, Coordinates: {coords}")
         else:
             print("No label files found starting with 'row_boxes_' in the 'labels' folder.")
     else:
@@ -86,15 +94,11 @@ for directory_path in result_directories:
 # Print the total count of selected directories
 print("\nTotal directories selected:", len(result_directories))
 
-print(f'result_directories[0]: {result_directories}, {type(result_directories)}')
-print(f'row_folder: {row_folder}, {type(row_folder)}')
-
-
-for result in result_directories:
+for result, rf in zip(result_directories, row_folder_list):
     claim_no = Path(result).name
-    print(f'claim_no: {claim_no}, {type(claim_no)}')
-
-    ocr = OCR(result, row_folder, [claim_no])
+    print(f'result: {result}')
+    print(f'claim_no: {claim_no}')
+    ocr = OCR(result, rf, [claim_no])
     ocr.runner()
-
     break
+
