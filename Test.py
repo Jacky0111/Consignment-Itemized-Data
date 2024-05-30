@@ -34,7 +34,7 @@ class micro:
 
 if __name__ == "__main__":
     # Define the path to the directory
-    directory = r'D:/Archive/Sample_201-250'
+    directory = r'D:/Archive/Sample_251-300'
 
     micro = micro()
     micro.checkFolders(directory)
