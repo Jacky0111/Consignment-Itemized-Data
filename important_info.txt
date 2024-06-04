@@ -405,3 +405,53 @@ ALMCIP12210341: No image file found. No CSV file found.
 ALMCIP12220723: No image file found. No CSV file found.
 ALMCIP12220827: No image file found. No CSV file found.
 ALMCIP12220882: Table image file found. CSV file detected.
+Current directory: D:\Archive\Sample_401-450
+ALMCIP01210037: Table image file found. CSV file detected.
+ALMCIP01210044: No image file found. No CSV file found.
+ALMCIP01210065: Table image file found. CSV file detected.
+ALMCIP01210247: Table image file found. CSV file detected.
+ALMCIP02210594: No image file found. No CSV file found.
+ALMCIP02210604: Table image file found. CSV file detected.
+ALMCIP03210037: Table image file found. CSV file detected.
+ALMCIP03210578: No image file found. No CSV file found.
+ALMCIP03210725: Table image file found. No CSV file found.
+ALMCIP04210278: No image file found. No CSV file found.
+ALMCIP04210297: Table image file found. CSV file detected.
+ALMCIP04210302: Table image file found. CSV file detected.
+ALMCIP04210340: Table image file found. CSV file detected.
+ALMCIP04210744: Table image file found. CSV file detected.
+ALMCIP04210911: No image file found. No CSV file found.
+ALMCIP05210051: No image file found. No CSV file found.
+ALMCIP05210184: Table image file found. No CSV file found.
+ALMCIP05210191: Table image file found. No CSV file found.
+ALMCIP05210416: No image file found. No CSV file found.
+ALMCIP06210057: No image file found. No CSV file found.
+ALMCIP06210079: Table image file found. CSV file detected.
+ALMCIP06210430: No image file found. No CSV file found.
+ALMCIP06230189: Table image file found. CSV file detected.
+ALMCIP07220410: Table image file found. No CSV file found.
+ALMCIP07220417: Table image file found. CSV file detected.
+ALMCIP07221043: Table image file found. CSV file detected.
+ALMCIP07230028: No image file found. No CSV file found.
+ALMCIP07230733: Table image file found. CSV file detected.
+ALMCIP08220184: Table image file found. CSV file detected.
+ALMCIP08230261: Table image file found. CSV file detected.
+ALMCIP08231032: No image file found. No CSV file found.
+ALMCIP08231182: No image file found. No CSV file found.
+ALMCIP09230388: Table image file found. CSV file detected.
+ALMCIP10220650: No image file found. No CSV file found.
+ALMCIP10220851: Table image file found. CSV file detected.
+ALMCIP10221076: No image file found. No CSV file found.
+ALMCIP10230329: Table image file found. CSV file detected.
+ALMCIP10231353: Table image file found. No CSV file found.
+ALMCIP11210293: Table image file found. CSV file detected.
+ALMCIP11220850: No image file found. No CSV file found.
+ALMCIP11230226: Table image file found. CSV file detected.
+ALMCIP11230340: Table image file found. CSV file detected.
+ALMCIP12210362: No image file found. No CSV file found.
+ALMCIP12210867: No image file found. No CSV file found.
+ALMCIP12221195: No image file found. No CSV file found.
+ALMCIP12230408: Table image file found. CSV file detected.
+ALMCIP12230451: Table image file found. CSV file detected.
+ALMCIP12230888: No image file found. No CSV file found.
+ALMCIP12231380: Table image file found. No CSV file found.
