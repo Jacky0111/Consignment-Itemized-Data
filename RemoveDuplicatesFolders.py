@@ -2,7 +2,7 @@ import os
 import shutil
 
 # Define the parent folder path
-parent_folder_path = "D:/Archive\\Sample_651-700"
+parent_folder_path = "D:/Archive\\Sample_701-750"
 
 # Get the list of folders in the parent folder
 parent_folders = os.listdir(parent_folder_path)
