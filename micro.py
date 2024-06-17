@@ -26,7 +26,7 @@ def check_folders(directory, result_list):
 
 
 # Define the path to the directory
-directory = r'D:\Archive\Sample_551-600'
+directory = r'D:\Archive\Sample_601-650'
 
 # Initialize an empty list to store the result
 result_directories = []
